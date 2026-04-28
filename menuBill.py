@@ -1,6 +1,9 @@
 from navigation import exit_program
+from models.empleado_crud import EmpleadoCRUD
 
 # from decorators import decorator_menu
+
+crud = EmpleadoCRUD()
 
 
 def show_menu(title, options):
@@ -44,7 +47,7 @@ def employeeMenu():
     show_menu(
         "Menú Empleado",
         [
-            {"label": "Nuevo Empleado", "action": lambda: print("Crear empleado...")},
+            {"label": "Nuevo Empleado","action": new_employee},
             {"label": "Actualizar Empleado", "action": lambda: print("Actualizar...")},
             {"label": "Eliminar Empleado", "action": lambda: print("Eliminar...")},
             {"label": "Atrás", "action": "break"},
@@ -106,3 +109,11 @@ def statisticsMenu():
             {"label": "Salir", "action": "exit"},
         ],
     )
+
+
+def new_employee():
+    nombre = input("Ingrese nombre: ")
+    cedula = input("Ingrese cédula: ")
+    sueldo = float(input("Ingrese sueldo: "))
+    id_nuevo = crud.create({"nombre": nombre, "cedula": cedula, "sueldo": sueldo})
+    print(f"Empleado creado con ID: {id_nuevo}")

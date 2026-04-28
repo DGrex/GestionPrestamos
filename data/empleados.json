@@ -1,0 +1,32 @@
+[
+    {
+        "nombre": "Ana",
+        "cedula": "1234567890",
+        "sueldo": 500,
+        "id": 1
+    },
+    {
+        "nombre": "Ana",
+        "cedula": "1234567890",
+        "sueldo": 500,
+        "id": 2
+    },
+    {
+        "nombre": "Ana",
+        "cedula": "1234567890",
+        "sueldo": 500,
+        "id": 3
+    },
+    {
+        "nombre": "Ana",
+        "cedula": "1234567890",
+        "sueldo": 500,
+        "id": 4
+    },
+    {
+        "nombre": "Denis",
+        "cedula": "1207279181",
+        "sueldo": 462.0,
+        "id": 5
+    }
+]
