@@ -1,6 +1,10 @@
 import json
 import os
 
+class JSONStorageError(Exception):
+    """Error personalizado para problemas con el archivo JSON."""
+    pass
+
 class JSONStorage:
     """
     Clase base para manipular archivos JSON con IDs automáticos y únicos.
@@ -21,9 +25,15 @@ class JSONStorage:
         return max_id + 1
 
     def load(self):
-        """Cargar datos desde el archivo JSON"""
         with open(self.__filename, "r") as f:
-            return json.load(f)
+            try:
+                return json.load(f)
+            except json.JSONDecodeError as e:
+                # Aquí lanzas tu propio error más descriptivo
+                raise JSONStorageError(
+                    f"El archivo '{self.__filename}' está vacío o mal formado. "
+                    f"Error original: {e}"
+                )
 
     def save(self, data):
         """Guardar datos en el archivo JSON"""

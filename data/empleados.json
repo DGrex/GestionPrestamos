@@ -1,50 +1,8 @@
 [
     {
-        "nombre": "Ana",
-        "cedula": "1234567890",
-        "sueldo": 500,
+        "nombre": "Denis",
+        "cedula": "1207279181",
+        "sueldo": 800.0,
         "id": 1
-    },
-    {
-        "nombre": "Ana",
-        "cedula": "1234567890",
-        "sueldo": 500,
-        "id": 2
-    },
-    {
-        "nombre": "Ana",
-        "cedula": "1234567890",
-        "sueldo": 500,
-        "id": 3
-    },
-    {
-        "nombre": "Ana",
-        "cedula": "1234567890",
-        "sueldo": 500,
-        "id": 4
-    },
-    {
-        "nombre": "Denis",
-        "cedula": "1207279181",
-        "sueldo": 462.0,
-        "id": 5
-    },
-    {
-        "nombre": "Denis",
-        "cedula": "1207279181",
-        "sueldo": null,
-        "id": 6
-    },
-    {
-        "nombre": "Denis",
-        "cedula": "1207279181",
-        "sueldo": 10.6078,
-        "id": 7
-    },
-    {
-        "nombre": "Denis",
-        "cedula": "1207279181",
-        "sueldo": 10.79,
-        "id": 8
     }
 ]
