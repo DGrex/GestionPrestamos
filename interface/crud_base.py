@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 
+
 class CRUDAbstract(ABC):
     """
     Clase abstracta que define la interfaz CRUD.

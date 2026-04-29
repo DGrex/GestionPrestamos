@@ -2,6 +2,7 @@ from interface.crud_base import CRUDAbstract
 from services.storage import JSONStorage
 from models.empleado import Empleado
 
+
 class EmpleadoCRUD(CRUDAbstract):
     def __init__(self):
         self.__storage = JSONStorage("data/empleados.json")
