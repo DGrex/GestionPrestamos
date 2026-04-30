@@ -5,8 +5,18 @@
         "monto": 900.0,
         "numero_cuotas": 9,
         "cuota": 100.0,
-        "saldo": 900.0,
+        "saldo": 0.0,
         "estado": "pagado",
         "id": 1
+    },
+    {
+        "empleado_id": 3,
+        "fecha_prestamo": "30/04/2026 15:45:11",
+        "monto": 900.0,
+        "numero_cuotas": 9,
+        "cuota": 100.0,
+        "saldo": 700.0,
+        "estado": "pendiente",
+        "id": 2
     }
 ]

@@ -1,0 +1,44 @@
+[
+    {
+        "prestamo_id": 1,
+        "fecha_pago": "2026-04-30",
+        "valor_pago": 100.0,
+        "id": 1
+    },
+    {
+        "prestamo_id": 1,
+        "fecha_pago": "2026-04-30",
+        "valor_pago": 800.0,
+        "id": 2
+    },
+    {
+        "prestamo_id": 1,
+        "fecha_pago": "2026-04-30",
+        "valor_pago": 100.0,
+        "id": 3
+    },
+    {
+        "prestamo_id": 1,
+        "fecha_pago": "2026-04-30",
+        "valor_pago": 100.0,
+        "id": 4
+    },
+    {
+        "prestamo_id": 1,
+        "fecha_pago": "2026-04-30",
+        "valor_pago": 600.0,
+        "id": 5
+    },
+    {
+        "prestamo_id": 2,
+        "fecha_pago": "2026-04-30",
+        "valor_pago": 100.0,
+        "id": 6
+    },
+    {
+        "prestamo_id": 2,
+        "fecha_pago": "2026-04-30",
+        "valor_pago": 100.0,
+        "id": 7
+    }
+]

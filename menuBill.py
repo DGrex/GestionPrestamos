@@ -3,6 +3,7 @@ from navigation import exit_program
 
 from models.empleado_crud import EmpleadoCRUD, Empleado
 from models.prestamo_crud import PrestamoCRUD, Prestamo
+from models.pago_crud import PagoCRUD
 from services.storage import JSONStorageError
 
 from utils import confirmar_accion
@@ -75,7 +76,7 @@ def payment_menu():
     show_menu(
         "Menú Pago",
         [
-            {"label": "Nuevo Pago", "action": lambda: print("Registrar pago...")},
+            {"label": "Nuevo Pago", "action": loan_payment},
             {"label": "Atrás", "action": "break"},
             {"label": "Salir", "action": "exit"},
         ],
@@ -222,11 +223,11 @@ def delete_employee():
 def new_loan():
     empleado_crud = EmpleadoCRUD()
     prestamo_crud = PrestamoCRUD()
-    
+
     id_emp = input("Ingrese cedula del empleado: ")
     empleado_data = empleado_crud.read_by_cedula(id_emp)
     id_emp = empleado_data["id"]
-    
+
     if not empleado_data:
         print("Empleado no encontrado.")
         return
@@ -240,7 +241,9 @@ def new_loan():
     prestamos = prestamo_crud.all()
     for p in prestamos:
         if p["empleado_id"] == id_emp and p["estado"] != "pagado":
-            print("\nEste empleado ya tiene un préstamo pendiente. No puede solicitar otro.")
+            print(
+                "\nEste empleado ya tiene un préstamo pendiente. No puede solicitar otro."
+            )
             return
 
     # Pedir datos del préstamo
@@ -263,3 +266,79 @@ def new_loan():
         print("Error al crear préstamo:")
         print(e)
 
+
+def loan_payment():
+    empleado_crud = EmpleadoCRUD()
+    prestamo_crud = PrestamoCRUD()
+    pago_crud = PagoCRUD()
+
+    cedula = input("Ingrese la cédula del empleado: ")
+
+    empleado_data = empleado_crud.read_by_cedula(cedula)
+    if not empleado_data:
+        print("Empleado no encontrado.")
+        return
+
+    # Mostrar datos del empleado
+    print("\n--- Datos del empleado ---")
+    print(f"Nombre: {empleado_data['nombre']}")
+    print(f"Cédula: {empleado_data['cedula']}")
+    print(f"Sueldo: {empleado_data['sueldo']}")
+
+    # Buscar préstamo pendiente
+    prestamos = prestamo_crud.all()
+    prestamo_data = next(
+        (
+            p
+            for p in prestamos
+            if p["empleado_id"] == empleado_data["id"] and p["estado"] == "pendiente"
+        ),
+        None,
+    )
+
+    if not prestamo_data:
+        print("\nEste empleado no tiene préstamos pendientes.")
+        return
+
+    # Mostrar datos del préstamo
+    print("\n--- Datos del préstamo ---")
+    print(f"ID Préstamo: {prestamo_data['id']}")
+    print(f"Fecha: {prestamo_data['fecha_prestamo']}")
+    print(f"Monto: {prestamo_data['monto']}")
+    print(f"Saldo: {prestamo_data['saldo']}")
+    print(f"Cuota: {prestamo_data['cuota']}")
+
+    # Pedir valor del pago
+
+    valor_pago = input("Ingrese valor del pago: ")
+
+    # Usar el método de la clase Prestamo
+    prestamo_obj = Prestamo(
+        prestamo_data["empleado_id"],
+        prestamo_data["fecha_prestamo"],
+        prestamo_data["monto"],
+        prestamo_data["numero_cuotas"],
+    )
+    # sincronizar saldo y estado actuales
+
+    # prestamo_obj._Prestamo__saldo = prestamo_data["saldo"]
+    # prestamo_obj._Prestamo__estado = prestamo_data["estado"]
+
+    prestamo_obj.set_saldo(prestamo_data["saldo"])
+    prestamo_obj.set_estado(prestamo_data["estado"])
+
+    try:
+        prestamo_obj.registrar_pago(valor_pago)
+    except ValueError as e:
+        print(f"Error: {e}")
+        return
+
+    # Guardar cambios en préstamo
+    prestamo_crud.update(prestamo_data["id"], prestamo_obj.to_dict())
+
+    # Guardar registro del pago
+    pago_crud.create({"prestamo_id": prestamo_data["id"], "valor_pago": valor_pago})
+
+    print("\nPago registrado correctamente.")
+    print(f"Saldo restante: {prestamo_obj.to_dict()['saldo']}")
+    print(f"Estado del préstamo: {prestamo_obj.to_dict()['estado']}")

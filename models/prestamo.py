@@ -2,7 +2,9 @@ from mixins.validation_mixin import ValidationMixin
 
 
 class Prestamo(ValidationMixin):
-    def __init__(self, empleado_id, fecha_prestamo, monto, numero_cuotas, estado = "Pendiente"):
+    def __init__(
+        self, empleado_id, fecha_prestamo, monto, numero_cuotas, estado="pendiente"
+    ):
         errores = []
 
         try:
@@ -46,22 +48,31 @@ class Prestamo(ValidationMixin):
 
     def get_fecha_prestamo(self):
         return self.__fecha_prestamo
-    
+
     def get_estado(self):
         return self.__estado
-    
+
+    def set_saldo(self, saldo):
+        self.__saldo = saldo
+
     def set_estado(self, estado):
-        if estado == "pagado":
-            self.__estado = estado
-        raise ValueError("Estado desconocido")
+        if not (estado == "pagado" or estado == "pendiente"):
+            raise ValueError("Estado desconocido")
+        self.__estado = estado
 
     # Método registrar pago
     def registrar_pago(self, valor_pago):
+        valor_pago= self.validar_monto(valor_pago, "Pago")
+        
         if valor_pago <= 0:
             raise ValueError("El pago debe ser mayor a 0.")
         if valor_pago > self.__saldo:
             raise ValueError("El pago no puede ser mayor al saldo pendiente.")
+        
         self.__saldo -= valor_pago
+
+        if self.__saldo == 0:
+            self.__estado = "pagado"
 
     def to_dict(self):
         return {
@@ -71,5 +82,5 @@ class Prestamo(ValidationMixin):
             "numero_cuotas": self.__numero_cuotas,
             "cuota": self.__cuota,
             "saldo": self.__saldo,
-            "estado": self.__estado
+            "estado": self.__estado,
         }
