@@ -1,12 +1,8 @@
 from navigation import exit_program
-from models.empleado_crud import EmpleadoCRUD,Empleado
+from models.empleado_crud import EmpleadoCRUD, Empleado
 from services.storage import JSONStorageError
 
-
-# from decorators import decorator_menu
-
 crud = EmpleadoCRUD()
-
 
 
 def show_menu(title, options):
@@ -37,10 +33,10 @@ def optionMenu():
         "Sistema de Gestión de Préstamos",
         [
             {"label": "Empleados", "action": employeeMenu},
-            {"label": "Préstamos", "action": loanMenu},
-            {"label": "Pagos", "action": paymentMenu},
-            {"label": "Consultas", "action": queryMenu},
-            {"label": "Estadísticas", "action": statisticsMenu},
+            {"label": "Préstamos", "action": loan_menu},
+            {"label": "Pagos", "action": payment_menu},
+            {"label": "Consultas", "action": query_menu},
+            {"label": "Estadísticas", "action": statistics_menu},
             {"label": "Salir", "action": "exit"},
         ],
     )
@@ -59,7 +55,7 @@ def employeeMenu():
     )
 
 
-def loanMenu():
+def loan_menu():
     show_menu(
         "Menú Préstamo",
         [
@@ -70,7 +66,7 @@ def loanMenu():
     )
 
 
-def paymentMenu():
+def payment_menu():
     show_menu(
         "Menú Pago",
         [
@@ -81,7 +77,7 @@ def paymentMenu():
     )
 
 
-def queryMenu():
+def query_menu():
     show_menu(
         "Menú Consultas",
         [
@@ -100,7 +96,7 @@ def queryMenu():
     )
 
 
-def statisticsMenu():
+def statistics_menu():
     show_menu(
         "Menú Estadísticas",
         [
@@ -129,7 +125,7 @@ def new_employee():
         print(e)
 
 
-def  update_employee():
+def update_employee():
     id_emp = int(input("Ingrese ID del empleado a actualizar: "))
     empleado_data = crud.read(id_emp)
 
@@ -138,9 +134,7 @@ def  update_employee():
         return
 
     empleado = Empleado(
-        empleado_data["nombre"],
-        empleado_data["cedula"],
-        empleado_data["sueldo"]
+        empleado_data["nombre"], empleado_data["cedula"], empleado_data["sueldo"]
     )
 
     opciones = {
@@ -175,6 +169,7 @@ def  update_employee():
         else:
             print("Opción inválida.")
 
+
 def delete_employee():
     id_emp = int(input("Ingrese ID del empleado a eliminar: "))
     empleado_data = crud.read(id_emp)
@@ -184,9 +179,7 @@ def delete_employee():
         return
 
     empleado = Empleado(
-        empleado_data["nombre"],
-        empleado_data["cedula"],
-        empleado_data["sueldo"]
+        empleado_data["nombre"], empleado_data["cedula"], empleado_data["sueldo"]
     )
 
     data = {

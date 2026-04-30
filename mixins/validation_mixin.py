@@ -1,14 +1,7 @@
 import re
 
-
 class ValidationMixin:
-    @staticmethod
-    def validar_positivo(valor, campo="valor"):
-        """Validar que un número sea positivo"""
-        if valor <= 0:
-            raise ValueError(f"Error: {campo} debe ser positivo.")
-        return valor
-
+    
     @staticmethod
     def validar_cedula_ecuatoriana(cedula: str):
         """

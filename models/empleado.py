@@ -1,6 +1,5 @@
 from mixins.validation_mixin import ValidationMixin
 
-
 class Empleado(ValidationMixin):
 
     def __init__(self, nombre, cedula, sueldo):
