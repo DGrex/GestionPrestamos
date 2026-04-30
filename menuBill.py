@@ -51,8 +51,8 @@ def employeeMenu():
         "Menú Empleado",
         [
             {"label": "Nuevo Empleado", "action": new_employee},
-            {"label": "Actualizar Empleado", "action": actualizar_empleado},
-            {"label": "Eliminar Empleado", "action": lambda: print("Eliminar...")},
+            {"label": "Actualizar Empleado", "action": update_employee},
+            {"label": "Eliminar Empleado", "action": delete_employee},
             {"label": "Atrás", "action": "break"},
             {"label": "Salir", "action": "exit"},
         ],
@@ -128,57 +128,8 @@ def new_employee():
         print("Error de almacenamiento:")
         print(e)
 
-def update_employee():
-    
-    id_emp = int(input("Ingrese ID del empleado a actualizar: "))
-    empleado_data = crud.read(id_emp)
 
-    if not empleado_data:
-        print("Empleado no encontrado.")
-        return
-
-    # Crear objeto con datos actuales
-    empleado = Empleado(
-        empleado_data["nombre"],
-        empleado_data["cedula"],
-        empleado_data["sueldo"]
-    )
-
-    while True:
-        print("\n--- Datos actuales del empleado ---")
-        print(f"1. Nombre: {empleado.get_nombre()}")
-        print(f"2. Cédula: {empleado.get_cedula()}")
-        print(f"3. Sueldo: {empleado.get_sueldo()}")
-        print("4. Guardar cambios")
-        print("5. Cancelar")
-
-        opcion = input("Seleccione el dato a modificar: ")
-
-        try:
-            match opcion:
-                case "1":
-                    nuevo_nombre = input("Ingrese nuevo nombre: ")
-                    empleado.set_nombre(nuevo_nombre)
-                case "2":
-                    nueva_cedula = input("Ingrese nueva cédula: ")
-                    empleado.set_cedula(nueva_cedula)
-                case "3":
-                    nuevo_sueldo = input("Ingrese nuevo sueldo: ")
-                    empleado.set_sueldo(nuevo_sueldo)
-                case "4":
-                    crud.update(id_emp, empleado.to_dict())
-                    print("Cambios guardados correctamente.")
-                    break
-                case "5":
-                    print("Actualización cancelada.")
-                    break
-                case _:
-                    print("Opción inválida.")
-        except ValueError as e:
-            print("Error de validación:")
-            print(e)
-
-def actualizar_empleado():
+def  update_employee():
     id_emp = int(input("Ingrese ID del empleado a actualizar: "))
     empleado_data = crud.read(id_emp)
 
@@ -220,6 +171,45 @@ def actualizar_empleado():
             break
         elif opcion == "5":
             print("Actualización cancelada.")
+            break
+        else:
+            print("Opción inválida.")
+
+def delete_employee():
+    id_emp = int(input("Ingrese ID del empleado a eliminar: "))
+    empleado_data = crud.read(id_emp)
+
+    if not empleado_data:
+        print("Empleado no encontrado.")
+        return
+
+    empleado = Empleado(
+        empleado_data["nombre"],
+        empleado_data["cedula"],
+        empleado_data["sueldo"]
+    )
+
+    data = {
+        "Nombre": empleado.get_nombre,
+        "Cédula": empleado.get_cedula,
+        "Sueldo": empleado.get_sueldo,
+    }
+
+    while True:
+        print("\n--- Datos actuales del empleado ---")
+        for label, getter in data.items():
+            print(f"{label}: {getter()}")
+        print("\n4. Eliminar")
+        print("5. Cancelar")
+
+        opcion = input("Seleccione opción: ")
+
+        if opcion == "4":
+            crud.delete(id_emp)
+            print("Empleado eliminado correctamente.")
+            break
+        elif opcion == "5":
+            print("Eliminación cancelada.")
             break
         else:
             print("Opción inválida.")
