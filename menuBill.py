@@ -1,6 +1,7 @@
 from navigation import exit_program
 from models.empleado_crud import EmpleadoCRUD, Empleado
 from services.storage import JSONStorageError
+from utils import confirmar_accion
 
 crud = EmpleadoCRUD()
 
@@ -160,9 +161,10 @@ def update_employee():
             except ValueError as e:
                 print("Error de validación:", e)
         elif opcion == "4":
-            crud.update(id_emp, empleado.to_dict())
-            print("Cambios guardados correctamente.")
-            break
+            if confirmar_accion("Actualizar"):
+                crud.update(id_emp, empleado.to_dict())
+                print("Cambios guardados correctamente.")
+                break
         elif opcion == "5":
             print("Actualización cancelada.")
             break
@@ -198,9 +200,10 @@ def delete_employee():
         opcion = input("Seleccione opción: ")
 
         if opcion == "4":
-            crud.delete(id_emp)
-            print("Empleado eliminado correctamente.")
-            break
+            if confirmar_accion("Eliminar"):                
+                crud.delete(id_emp)
+                print("Empleado eliminado correctamente.")
+                break
         elif opcion == "5":
             print("Eliminación cancelada.")
             break
