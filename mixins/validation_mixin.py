@@ -1,7 +1,8 @@
 import re
 
+
 class ValidationMixin:
-    
+
     @staticmethod
     def validar_cedula_ecuatoriana(cedula: str):
         """
@@ -91,3 +92,28 @@ class ValidationMixin:
         nombre = " ".join([palabra.capitalize() for palabra in nombre.split()])
 
         return nombre
+
+    def validar_monto(self, monto, field_name="Monto"):
+        try:
+            monto = float(monto)
+        except ValueError:
+            raise ValueError(f"{field_name} debe ser un número válido.")
+
+        if monto <= 0:
+            raise ValueError(f"{field_name} debe ser positivo.")
+
+        # Redondear a 2 decimales
+        return round(monto, 2)
+
+        # --- Validación de número de cuotas ---
+
+    def validar_numero_cuotas(self, numero_cuotas, field_name="Número de cuotas"):
+        try:
+            numero_cuotas = int(numero_cuotas)
+        except ValueError:
+            raise ValueError(f"{field_name} debe ser un número entero.")
+
+        if numero_cuotas <= 0:
+            raise ValueError(f"{field_name} debe ser mayor a 0.")
+
+        return numero_cuotas

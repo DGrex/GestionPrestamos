@@ -4,11 +4,11 @@ def confirmar_accion(accion: str) -> bool:
     Retorna True si confirma (s), False si cancela (n).
     """
     while True:
-        respuesta = input(f"¿Está seguro de {accion}? (s/n): ").strip().lower()
-        if respuesta == "s":
+        respuesta = input(f"¿Está seguro de {accion}? \n 1. Si \n 2. No \n Ingrese una Opción: ")
+        if respuesta == "1":
             return True
-        elif respuesta == "n":
+        elif respuesta == "2":
             return False
         else:
-            print("Respuesta inválida. Por favor ingrese 's' para sí o 'n' para no.")
+            print("Respuesta inválida")
 

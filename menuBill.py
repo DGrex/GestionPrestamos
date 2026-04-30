@@ -1,6 +1,10 @@
+from datetime import datetime
 from navigation import exit_program
+
 from models.empleado_crud import EmpleadoCRUD, Empleado
+from models.prestamo_crud import PrestamoCRUD, Prestamo
 from services.storage import JSONStorageError
+
 from utils import confirmar_accion
 
 crud = EmpleadoCRUD()
@@ -60,7 +64,7 @@ def loan_menu():
     show_menu(
         "Menú Préstamo",
         [
-            {"label": "Nuevo Préstamo", "action": lambda: print("Crear préstamo...")},
+            {"label": "Nuevo Préstamo", "action": new_loan},
             {"label": "Atrás", "action": "break"},
             {"label": "Salir", "action": "exit"},
         ],
@@ -116,8 +120,12 @@ def new_employee():
     cedula = input("Ingrese cédula: ")
     sueldo = input("Ingrese sueldo: ")
     try:
-        id_nuevo = crud.create({"nombre": nombre, "cedula": cedula, "sueldo": sueldo})
-        print(f"Empleado creado con ID: {id_nuevo}")
+        if confirmar_accion("Guardar"):
+            id_nuevo = crud.create(
+                {"nombre": nombre, "cedula": cedula, "sueldo": sueldo}
+            )
+            print(f"Empleado creado con ID: {id_nuevo}")
+
     except ValueError as e:
         print("Errores encontrados:")
         print(e)
@@ -127,9 +135,9 @@ def new_employee():
 
 
 def update_employee():
-    id_emp = int(input("Ingrese ID del empleado a actualizar: "))
-    empleado_data = crud.read(id_emp)
-
+    id_emp = input("Ingrese cedula del empleado a actualizar: ")
+    empleado_data = crud.read_by_cedula(id_emp)
+    id_emp = empleado_data["id"]
     if not empleado_data:
         print("Empleado no encontrado.")
         return
@@ -173,9 +181,9 @@ def update_employee():
 
 
 def delete_employee():
-    id_emp = int(input("Ingrese ID del empleado a eliminar: "))
-    empleado_data = crud.read(id_emp)
-
+    id_emp = input("Ingrese cedula del empleado a eliminar: ")
+    empleado_data = crud.read_by_cedula(id_emp)
+    id_emp = empleado_data["id"]
     if not empleado_data:
         print("Empleado no encontrado.")
         return
@@ -200,7 +208,7 @@ def delete_employee():
         opcion = input("Seleccione opción: ")
 
         if opcion == "4":
-            if confirmar_accion("Eliminar"):                
+            if confirmar_accion("Eliminar"):
                 crud.delete(id_emp)
                 print("Empleado eliminado correctamente.")
                 break
@@ -209,3 +217,49 @@ def delete_employee():
             break
         else:
             print("Opción inválida.")
+
+
+def new_loan():
+    empleado_crud = EmpleadoCRUD()
+    prestamo_crud = PrestamoCRUD()
+    
+    id_emp = input("Ingrese cedula del empleado: ")
+    empleado_data = empleado_crud.read_by_cedula(id_emp)
+    id_emp = empleado_data["id"]
+    
+    if not empleado_data:
+        print("Empleado no encontrado.")
+        return
+
+    # Mostrar datos del empleado
+    print("\n--- Datos del empleado ---")
+    print(f"Nombre: {empleado_data['nombre']}")
+    print(f"Cédula: {empleado_data['cedula']}")
+    print(f"Sueldo: {empleado_data['sueldo']}")
+
+    prestamos = prestamo_crud.all()
+    for p in prestamos:
+        if p["empleado_id"] == id_emp and p["estado"] != "pagado":
+            print("\nEste empleado ya tiene un préstamo pendiente. No puede solicitar otro.")
+            return
+
+    # Pedir datos del préstamo
+    fecha_prestamo = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+    monto = input("Ingrese monto del préstamo: ")
+    numero_cuotas = input("Ingrese número de cuotas: ")
+    # Crear préstamo
+    try:
+        if confirmar_accion("Guardar"):
+            id_prestamo = prestamo_crud.create(
+                {
+                    "empleado_id": id_emp,
+                    "fecha_prestamo": fecha_prestamo,
+                    "monto": monto,
+                    "numero_cuotas": numero_cuotas,
+                }
+            )
+            print(f"\nPréstamo creado correctamente con ID: {id_prestamo}")
+    except ValueError as e:
+        print("Error al crear préstamo:")
+        print(e)
+
