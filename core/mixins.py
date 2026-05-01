@@ -93,7 +93,7 @@ class ValidationMixin:
         return nombre
 
     @staticmethod
-    def validate_amount(self, monto, field_name="Monto"):
+    def validate_amount(monto, field_name="Monto"):
         try:
             monto = float(monto)
         except ValueError:
@@ -108,7 +108,7 @@ class ValidationMixin:
         # --- Validación de número de cuotas ---
 
     @staticmethod
-    def validate_number_quotas(self, numero_cuotas, field_name="Número de cuotas"):
+    def validate_number_quotas(numero_cuotas, field_name="Número de cuotas"):
         try:
             numero_cuotas = int(numero_cuotas)
         except ValueError:

@@ -1,4 +1,4 @@
-from controllers.employee_controller import EmployeeController
+from controllers import EmployeeController , LoanController
 from core.mixins import LogMixin
 import sys
 
@@ -6,6 +6,7 @@ class Menu:
 
     def __init__(self):
         self.employee_controller = EmployeeController()
+        self.loan_controller = LoanController()
 
     def show_menu(self, title, options):
         while True:
@@ -34,8 +35,8 @@ class Menu:
             "Sistema de Gestión de Préstamos",
             [
                 {"label": "Empleados", "action": self.employeeMenu},
-                {"label": "Préstamos", "action": lambda: None},
-                {"label": "Pagos", "action": lambda: None},
+                {"label": "Préstamos", "action": self.loan_menu},
+                {"label": "Pagos", "action": self.payment_menu},
                 {"label": "Consultas", "action": lambda: None},
                 {"label": "Estadísticas", "action": lambda: None},
                 {"label": "Salir", "action": "exit"},
@@ -54,6 +55,26 @@ class Menu:
             ],
         )
 
+    def loan_menu(self):
+        self.show_menu(
+            "Menú Préstamo",
+            [
+                {"label": "Nuevo Préstamo", "action": lambda: safe_action(self.loan_controller.create)},
+                {"label": "Atrás", "action": "break"},
+                {"label": "Salir", "action": "exit"},
+            ],
+        )
+
+    def payment_menu(self):
+        self.show_menu(
+            "Menú Pago",
+            [
+                {"label": "Nuevo Pago", "action": lambda: None},
+                {"label": "Atrás", "action": "break"},
+                {"label": "Salir", "action": "exit"},
+            ],
+        )
+        
 def safe_action(action, *args, **kwargs):
     try:
         return action(*args, **kwargs)

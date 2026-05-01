@@ -1,0 +1,12 @@
+[
+    {
+        "empleado_id": 3,
+        "fecha_prestamo": "01/05/2026 15:32:12",
+        "monto": 900.0,
+        "numero_cuotas": 3,
+        "cuota": 300.0,
+        "saldo": 900.0,
+        "estado": "pendiente",
+        "id": 1
+    }
+]
