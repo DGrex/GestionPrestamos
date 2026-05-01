@@ -1,9 +1,7 @@
-from interface.crud_base import CRUDAbstract
-from services.storage import JSONStorage
-from models.empleado import Empleado
+from core import CrudInterface, JsonManager, LogMixin, ValidationMixin
+from models import Empleado
 
-
-class EmpleadoCRUD(CRUDAbstract):
+class EmployeeCRUD(CRUDAbstract):
     def __init__(self):
         self.__storage = JSONStorage("data/empleados.json")
 
