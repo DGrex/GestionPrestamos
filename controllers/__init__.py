@@ -1,5 +1,5 @@
 # Paquete de modelos de dominio.
 # Reexporta las entidades para permitir imports limpios: `from models import ...`.
-from .empleado import Empleado
+from .employee_controller import EmployeeController
 
-__all__ = ["Empleado"]
+__all__ = ["EmployeeController"]

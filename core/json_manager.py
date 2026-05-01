@@ -1,11 +1,11 @@
 import json
 import os
 
-class JSONStorageError(Exception):
+class JsonManagerError(Exception):
     """Error personalizado para problemas con el archivo JSON."""
     pass
 
-class JSONStorage:
+class JsonManager:
     """
     Clase base para manipular archivos JSON con IDs automáticos y únicos.
     """

@@ -3,7 +3,7 @@ import re
 class ValidationMixin:
 
     @staticmethod
-    def validar_cedula_ecuatoriana(cedula: str):
+    def validate_identification(cedula: str):
         """
         Validar cédula ecuatoriana:
         - Debe tener 10 dígitos
@@ -42,7 +42,7 @@ class ValidationMixin:
         return cedula
 
     @staticmethod
-    def validar_sueldo(valor, limite_max=1_000_000):
+    def validate_salary(valor, limite_max=1_000_000):
         if isinstance(valor, str):
             if "," in valor:
                 raise ValueError("Error: use '.' como separador decimal, no ','.")
@@ -61,7 +61,7 @@ class ValidationMixin:
         return round(valor, 2)
 
     @staticmethod
-    def validar_nombre(nombre, max_length=50):
+    def validate_name(nombre, max_length=50):
         """
         Validar nombre:
         - Mínimo 3 caracteres
@@ -93,14 +93,14 @@ class ValidationMixin:
         return nombre
 
     @staticmethod
-    def validar_monto(self, monto, field_name="Monto"):
+    def validate_amount(self, monto, field_name="Monto"):
         try:
             monto = float(monto)
         except ValueError:
-            raise ValueError(f"{field_name} debe ser un número válido.")
+            raise ValueError(f"Error: {field_name} debe ser un número válido.")
 
         if monto <= 0:
-            raise ValueError(f"{field_name} debe ser positivo.")
+            raise ValueError(f"Error: {field_name} debe ser positivo.")
 
         # Redondear a 2 decimales
         return round(monto, 2)
@@ -108,21 +108,56 @@ class ValidationMixin:
         # --- Validación de número de cuotas ---
 
     @staticmethod
-    def validar_numero_cuotas(self, numero_cuotas, field_name="Número de cuotas"):
+    def validate_number_quotas(self, numero_cuotas, field_name="Número de cuotas"):
         try:
             numero_cuotas = int(numero_cuotas)
         except ValueError:
-            raise ValueError(f"{field_name} debe ser un número entero.")
+            raise ValueError(f"Error: {field_name} debe ser un número entero.")
 
         if numero_cuotas <= 0:
-            raise ValueError(f"{field_name} debe ser mayor a 0.")
+            raise ValueError(f"Error: {field_name} debe ser mayor a 0.")
 
         return numero_cuotas
 
 # Mixin de registro: imprime mensajes informativos por consola.
 class LogMixin:
-    # Prefijo estático compartido por todas las instancias.
-    LOG_PREFIX = "[LOG]"
+    # Métodos de logging con distintos prefijos
 
-    def log(self, message):
-        print(f"{LogMixin.LOG_PREFIX}: {message}")
+    def log_info(self, message):
+        print(f"[INFO]: {message}")
+
+    def log_warn(self, message):
+        print(f"[WARN]: {message}")
+
+    def log_error(self, message):
+        print(f"[ERROR]: {message}")
+
+    def log_debug(self, message):
+        print(f"[DEBUG]: {message}")
+
+    def log_success(self, message):
+        print(f"[SUCCESS]: {message}")
+
+    def log_trace(self, message):
+        print(f"[TRACE]: {message}")
+
+    # Método genérico si quieres pasar el prefijo manualmente
+    def log(self, message, prefix="[LOG]"):
+        print(f"{prefix}: {message}")
+
+
+class ConfirmAction:
+    
+    def confirm_action(self, accion: str) -> bool:
+        """
+        Pregunta al usuario si desea confirmar la acción (eliminar/actualizar).
+        Retorna True si confirma (s), False si cancela (n).
+        """
+        while True:
+            respuesta = input(f"¿Está seguro de {accion}? \n 1. Si \n 2. No \n Ingrese una Opción: ")
+            if respuesta == "1":
+                return True
+            elif respuesta == "2":
+                return False
+            else:
+                print("Respuesta inválida")

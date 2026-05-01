@@ -1,3 +1,4 @@
-from menuBill import optionMenu as start
+from views import Menu
 
-start()
+app = Menu()
+app.optionMenu()
