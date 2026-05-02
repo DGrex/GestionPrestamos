@@ -1,7 +1,7 @@
 from core import (
     CrudInterface,
     JsonManager,
-    # JsonManagerError,
+    JsonManagerError,
     LogMixin,
     ValidationMixin,
     ConfirmAction,
@@ -20,7 +20,11 @@ class PayController(CrudInterface, ValidationMixin, LogMixin, ConfirmAction):
         self.__storage = JsonManager(PayController.DATA_FILE)
 
     def all(self):
-        return self.__storage.load()
+        try:
+            return self.__storage.load()
+        except JsonManagerError as e:
+            ConsoleUtils.print_error(str(e))
+            return []
 
     def create(self):
         employee_controller = EmployeeController()

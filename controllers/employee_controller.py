@@ -1,7 +1,7 @@
 from core import (
     CrudInterface,
     JsonManager,
-    # JsonManagerError,
+    JsonManagerError,
     LogMixin,
     ValidationMixin,
     ConfirmAction,
@@ -18,7 +18,11 @@ class EmployeeController(CrudInterface, ValidationMixin, LogMixin, ConfirmAction
         self.__storage = JsonManager(EmployeeController.DATA_FILE)
 
     def all(self):
-        return self.__storage.load()
+        try:
+            return self.__storage.load()
+        except JsonManagerError as e:
+            ConsoleUtils.print_error(str(e))
+            return []
 
     def read(self):
         ConsoleUtils.print_header("=== EMPLEADOS ===")
@@ -30,7 +34,11 @@ class EmployeeController(CrudInterface, ValidationMixin, LogMixin, ConfirmAction
             ConsoleUtils.print_colored(employee.display_name, Fore.CYAN)
 
     def read_by_cedula(self, identification):
-        employee = self.__storage.load()
+        try:
+            employee = self.__storage.load()
+        except JsonManagerError as e:
+            ConsoleUtils.print_error(str(e))
+            return None
         return next((e for e in employee if e["cedula"] == identification), None)
 
     def create(self):
@@ -40,7 +48,11 @@ class EmployeeController(CrudInterface, ValidationMixin, LogMixin, ConfirmAction
         identification = self.validate_identification(input("Ingrese cédula: "))
         salary = self.validate_salary(input("Ingrese sueldo: "))
 
-        employee_data = self.__storage.load()
+        try:
+            employee_data = self.__storage.load()
+        except JsonManagerError as e:
+            ConsoleUtils.print_error(str(e))
+            return
 
         # Validar unicidad de cédula
         if any(e["cedula"] == identification for e in employee_data):
@@ -107,7 +119,11 @@ class EmployeeController(CrudInterface, ValidationMixin, LogMixin, ConfirmAction
                 self.log_info(f"{label} actualizado en memoria")
             elif option == "4":
                 if self.confirm_action("Actualizar"):
-                    data_employee = self.__storage.load()
+                    try:
+                        data_employee = self.__storage.load()
+                    except JsonManagerError as e:
+                        ConsoleUtils.print_error(str(e))
+                        break
                     for e in data_employee:
                         if (
                             e["cedula"] == employee.identification

@@ -30,7 +30,7 @@ class JsonManager:
                 return json.load(f)
             except json.JSONDecodeError as e:
                 # Aquí lanzas tu propio error más descriptivo
-                raise JSONStorageError(
+                raise JsonManagerError(
                     f"El archivo '{self.__filename}' está vacío o mal formado. "
                     f"Error original: {e}"
                 )

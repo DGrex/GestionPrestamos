@@ -4,7 +4,7 @@ from controllers import (
     PayController,
     StatsController,
 )
-from core import LogMixin, ConsoleUtils
+from core import LogMixin, ConsoleUtils, JsonManagerError
 from colorama import Fore
 import sys
 
@@ -38,7 +38,7 @@ class Menu:
                         log_mixin.log_info("Cerrando el sistema...")
                         sys.exit()
                     elif callable(action):
-                        action()
+                        safe_action(action)
                         input("\nPresione Enter para continuar...")
                 else:
                     log_mixin.log_error("Opción Incorrecta")
@@ -122,4 +122,9 @@ def safe_action(action, *args, **kwargs):
         return action(*args, **kwargs)
     except ValueError as e:
         log_mixin.log_error(e)
+    except JsonManagerError as e:
+        ConsoleUtils.print_error(str(e))
+        return None
+    except Exception as e:
+        log_mixin.log_error(f"Error inesperado: {e}")
         return None

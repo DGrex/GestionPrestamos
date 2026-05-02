@@ -2,7 +2,7 @@ import os
 from functools import reduce
 from colorama import Fore, Style
 
-from core import JsonManager, ConsoleUtils
+from core import JsonManager, JsonManagerError, ConsoleUtils
 from models import Employee, Loan, Pay
 
 
@@ -12,9 +12,24 @@ class StatsController:
     PAYS_FILE = "data/Pay.json"
 
     def __init__(self):
-        self.employees = JsonManager(StatsController.EMPLOYEES_FILE).load()
-        self.loans = JsonManager(StatsController.LOANS_FILE).load()
-        self.pays = JsonManager(StatsController.PAYS_FILE).load()
+        self.employees = []
+        self.loans = []
+        self.pays = []
+
+        try:
+            self.employees = JsonManager(StatsController.EMPLOYEES_FILE).load()
+        except JsonManagerError as e:
+            ConsoleUtils.print_error(str(e))
+
+        try:
+            self.loans = JsonManager(StatsController.LOANS_FILE).load()
+        except JsonManagerError as e:
+            ConsoleUtils.print_error(str(e))
+
+        try:
+            self.pays = JsonManager(StatsController.PAYS_FILE).load()
+        except JsonManagerError as e:
+            ConsoleUtils.print_error(str(e))
 
     def show(self):
         ConsoleUtils.print_header("=== CONSULTA GENERAL / ESTADÍSTICAS ===")
