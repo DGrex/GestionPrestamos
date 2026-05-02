@@ -1,14 +1,1 @@
-[
-    {
-        "nombre": "Monica Moran",
-        "cedula": "1204233561",
-        "sueldo": 800.0,
-        "id": 2
-    },
-    {
-        "nombre": "Denis",
-        "cedula": "1207279181",
-        "sueldo": 800.0,
-        "id": 3
-    }
-]
+[]

@@ -5,7 +5,7 @@
         "monto": 900.0,
         "numero_cuotas": 3,
         "cuota": 300.0,
-        "saldo": 900.0,
+        "saldo": 700.0,
         "estado": "pendiente",
         "id": 1
     }

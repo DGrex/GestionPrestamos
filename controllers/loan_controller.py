@@ -10,7 +10,7 @@ from models import Loan
 from controllers import EmployeeController
 from datetime import datetime
 
-class LoanController( CrudInterface, ValidationMixin, LogMixin, ConfirmAction):
+class LoanController(CrudInterface, ValidationMixin, LogMixin, ConfirmAction):
     DATA_FILE = "data/Loan.json"
     def __init__(self):
         self.__storage = JsonManager(LoanController.DATA_FILE)
@@ -36,7 +36,7 @@ class LoanController( CrudInterface, ValidationMixin, LogMixin, ConfirmAction):
         print(f"Cédula: {employee_data['cedula']}")
         print(f"Sueldo: {employee_data['sueldo']}")
 
-        loans = self.__storage.load() or []
+        loans = self.all() or []
 
         for l in loans:
             if l.get("empleado_id") == id_employee and l.get("estado") != "pagado":

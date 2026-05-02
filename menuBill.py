@@ -333,7 +333,7 @@ def loan_payment():
     print("\nPago registrado correctamente.")
     print(f"Saldo restante: {prestamo_obj.to_dict()['saldo']}")
     print(f"Estado del préstamo: {prestamo_obj.to_dict()['estado']}")
-
+ 
 
 # ==================== CONSULTAS ====================
 

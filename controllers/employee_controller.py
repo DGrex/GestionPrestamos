@@ -15,6 +15,9 @@ class EmployeeController(CrudInterface, ValidationMixin, LogMixin, ConfirmAction
     def __init__(self):
         self.__storage = JsonManager(EmployeeController.DATA_FILE)
 
+    def all(self):
+        return self.__storage.load()
+    
     def read(self, id):
         empleados = self.__storage.load()
         return next((e for e in empleados if e["id"] == id), None)

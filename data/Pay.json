@@ -1,0 +1,12 @@
+[
+    {
+        "prestamo_id": 1,
+        "valor_pago": 100.0,
+        "id": 1
+    },
+    {
+        "prestamo_id": 1,
+        "valor_pago": 100.0,
+        "id": 2
+    }
+]

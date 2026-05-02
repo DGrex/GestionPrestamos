@@ -147,6 +147,7 @@ class LogMixin:
 
 
 class ConfirmAction:
+    log_mixin = LogMixin()
     
     def confirm_action(self, accion: str) -> bool:
         """
@@ -154,10 +155,10 @@ class ConfirmAction:
         Retorna True si confirma (s), False si cancela (n).
         """
         while True:
-            respuesta = input(f"¿Está seguro de {accion}? \n 1. Si \n 2. No \n Ingrese una Opción: ")
+            respuesta = input(f"\n¿Está seguro de {accion}? \n 1. Si \n 2. No \n Ingrese una Opción: ")
             if respuesta == "1":
                 return True
             elif respuesta == "2":
                 return False
             else:
-                print("Respuesta inválida")
+                self.log_mixin.log_error("Respuesta inválida\n")

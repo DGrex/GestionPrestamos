@@ -1,12 +1,17 @@
-from controllers import EmployeeController , LoanController
-from core.mixins import LogMixin
+from controllers import EmployeeController , LoanController , PayController
+from core import LogMixin
 import sys
 
+log_mixin = LogMixin()
+
 class Menu:
+    
+    
 
     def __init__(self):
         self.employee_controller = EmployeeController()
         self.loan_controller = LoanController()
+        self.pay_controller = PayController()
 
     def show_menu(self, title, options):
         while True:
@@ -22,13 +27,14 @@ class Menu:
                     if action == "break":
                         break
                     elif action == "exit":
+                        log_mixin.log_info("Cerrando el sistema...")
                         sys.exit()
                     elif callable(action):
                         action()
                 else:
-                    print("\nOpción Incorrecta")
+                    log_mixin.log_error("Opción Incorrecta")
             except ValueError:
-                print("\nDebe ingresar un número válido.")
+                log_mixin.log_error("Debe ingresar un número válido.")
         
     def optionMenu(self):
         self.show_menu(
@@ -69,7 +75,7 @@ class Menu:
         self.show_menu(
             "Menú Pago",
             [
-                {"label": "Nuevo Pago", "action": lambda: None},
+                {"label": "Nuevo Pago", "action": lambda: safe_action(self.pay_controller.create)},
                 {"label": "Atrás", "action": "break"},
                 {"label": "Salir", "action": "exit"},
             ],
@@ -78,8 +84,7 @@ class Menu:
 def safe_action(action, *args, **kwargs):
     try:
         return action(*args, **kwargs)
-    except ValueError as e:
-        log_mixin = LogMixin()  
+    except ValueError as e:        
         log_mixin.log_error(e)
         return None
 
