@@ -1,4 +1,6 @@
 import re
+from colorama import Fore
+
 
 class ValidationMixin:
 
@@ -119,43 +121,60 @@ class ValidationMixin:
 
         return numero_cuotas
 
+
 # Mixin de registro: imprime mensajes informativos por consola.
 class LogMixin:
     # Métodos de logging con distintos prefijos
 
     def log_info(self, message):
-        print(f"[INFO]: {message}")
+        from .console_utils import ConsoleUtils
+
+        ConsoleUtils.print_info(f"[INFO]: {message}")
 
     def log_warn(self, message):
-        print(f"[WARN]: {message}")
+        from .console_utils import ConsoleUtils
+
+        ConsoleUtils.print_colored(f"[WARN]: {message}", Fore.YELLOW)
 
     def log_error(self, message):
-        print(f"[ERROR]: {message}")
+        from .console_utils import ConsoleUtils
+
+        ConsoleUtils.print_error(f"[ERROR]: {message}")
 
     def log_debug(self, message):
-        print(f"[DEBUG]: {message}")
+        from .console_utils import ConsoleUtils
+
+        ConsoleUtils.print_colored(f"[DEBUG]: {message}", Fore.BLUE)
 
     def log_success(self, message):
-        print(f"[SUCCESS]: {message}")
+        from .console_utils import ConsoleUtils
+
+        ConsoleUtils.print_success(f"[SUCCESS]: {message}")
 
     def log_trace(self, message):
-        print(f"[TRACE]: {message}")
+        from .console_utils import ConsoleUtils
+
+        ConsoleUtils.print_colored(f"[TRACE]: {message}", Fore.MAGENTA)
 
     # Método genérico si quieres pasar el prefijo manualmente
     def log(self, message, prefix="[LOG]"):
-        print(f"{prefix}: {message}")
+        from .console_utils import ConsoleUtils
+
+        ConsoleUtils.print_colored(f"{prefix}: {message}")
 
 
 class ConfirmAction:
     log_mixin = LogMixin()
-    
+
     def confirm_action(self, accion: str) -> bool:
         """
         Pregunta al usuario si desea confirmar la acción (eliminar/actualizar).
         Retorna True si confirma (s), False si cancela (n).
         """
         while True:
-            respuesta = input(f"\n¿Está seguro de {accion}? \n 1. Si \n 2. No \n Ingrese una Opción: ")
+            respuesta = input(
+                f"\n¿Está seguro de {accion}? \n 1. Si \n 2. No \n Ingrese una Opción: "
+            )
             if respuesta == "1":
                 return True
             elif respuesta == "2":

@@ -5,10 +5,12 @@ from core import (
     LogMixin,
     ValidationMixin,
     ConfirmAction,
+    ConsoleUtils,
 )
 from controllers import EmployeeController, LoanController
-from models import Pay , Loan
+from models import Pay, Loan
 from datetime import datetime
+from colorama import Fore
 
 
 class PayController(CrudInterface, ValidationMixin, LogMixin, ConfirmAction):
@@ -62,7 +64,7 @@ class PayController(CrudInterface, ValidationMixin, LogMixin, ConfirmAction):
         print(f"Cuota: {loan_data['cuota']}")
         # Pedir valor del pago
 
-        value_pay = self.validate_amount(input("Ingrese valor del pago: "),"Pago")
+        value_pay = self.validate_amount(input("Ingrese valor del pago: "), "Pago")
         pay_date = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
         # Usar el método de la clase Prestamo
         loan = Loan(
@@ -74,20 +76,20 @@ class PayController(CrudInterface, ValidationMixin, LogMixin, ConfirmAction):
             loan_data["saldo"],
             loan_data["estado"],
         )
-    
+
         try:
             loan.register_payment(value_pay)
         except ValueError as e:
             self.log_error(f"{e}")
             return
 
-        if  not self.confirm_action("Guardar"):
+        if not self.confirm_action("Guardar"):
             return self.log_warn("Accion Cancelada")
         # Guardar cambios en préstamo
         loan_controller.update(loan_data["id"], loan.to_dict())
         # Guardar registro del pago
         pay = Pay(loan_data["id"], value_pay, pay_date)
-        
+
         self.__storage.append(pay.to_dict())
 
         self.log_success("\nPago registrado correctamente.")
@@ -95,13 +97,13 @@ class PayController(CrudInterface, ValidationMixin, LogMixin, ConfirmAction):
         self.log_info(f"Estado del préstamo: {loan.to_dict()['estado']}")
 
     def read(self):
-        print("\n=== EMPLEADOS ===")        
+        ConsoleUtils.print_header("=== PAGOS ===")
         if not self.all():
-            print("No hay clientes registrados")
+            ConsoleUtils.print_error("No hay pagos registrados")
             return
         for pay_data in self.all():
             pay = Pay.from_dict(pay_data)
-            print(pay.display_pay)
+            ConsoleUtils.print_colored(pay.display_pay, Fore.MAGENTA)
 
     def update(self, id, data):
         raise NotImplementedError("Los pagos no se pueden actualizar.")

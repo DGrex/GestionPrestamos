@@ -1,32 +1,12 @@
 [
     {
-        "empleado_id": 1,
-        "fecha_prestamo": "01/05/2026 22:06:15",
+        "empleado_id": 3,
+        "fecha_prestamo": "02/05/2026 00:05:42",
         "monto": 900.0,
-        "numero_cuotas": 9,
-        "cuota": 100.0,
-        "saldo": 900.0,
+        "numero_cuotas": 3,
+        "cuota": 300.0,
+        "saldo": 800.0,
         "estado": "pendiente",
         "id": 1
-    },
-    {
-        "empleado_id": 3,
-        "fecha_prestamo": "01/05/2026 22:49:23",
-        "monto": 1200.0,
-        "numero_cuotas": 30,
-        "cuota": 40.0,
-        "saldo": 1200.0,
-        "estado": "pendiente",
-        "id": 2
-    },
-    {
-        "empleado_id": 2,
-        "fecha_prestamo": "01/05/2026 22:50:26",
-        "monto": 300.0,
-        "numero_cuotas": 3,
-        "cuota": 100.0,
-        "saldo": 0.0,
-        "estado": "pagado",
-        "id": 3
     }
-]  
+]

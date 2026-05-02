@@ -5,8 +5,10 @@ from core import (
     LogMixin,
     ValidationMixin,
     ConfirmAction,
+    ConsoleUtils,
 )
 from models import Employee
+from colorama import Fore
 
 
 class EmployeeController(CrudInterface, ValidationMixin, LogMixin, ConfirmAction):
@@ -17,15 +19,15 @@ class EmployeeController(CrudInterface, ValidationMixin, LogMixin, ConfirmAction
 
     def all(self):
         return self.__storage.load()
-    
+
     def read(self):
-        print("\n=== EMPLEADOS ===")        
+        ConsoleUtils.print_header("=== EMPLEADOS ===")
         if not self.all():
-            print("No hay clientes registrados")
+            ConsoleUtils.print_error("No hay empleados registrados")
             return
         for employee_data in self.all():
             employee = Employee.from_dict(employee_data)
-            print(employee.display_name)
+            ConsoleUtils.print_colored(employee.display_name, Fore.CYAN)
 
     def read_by_cedula(self, identification):
         employee = self.__storage.load()

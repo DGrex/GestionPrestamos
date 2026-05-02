@@ -5,13 +5,17 @@ from core import (
     LogMixin,
     ValidationMixin,
     ConfirmAction,
+    ConsoleUtils,
 )
 from models import Loan
 from controllers import EmployeeController
 from datetime import datetime
+from colorama import Fore
+
 
 class LoanController(CrudInterface, ValidationMixin, LogMixin, ConfirmAction):
     DATA_FILE = "data/Loan.json"
+
     def __init__(self):
         self.__storage = JsonManager(LoanController.DATA_FILE)
 
@@ -20,14 +24,14 @@ class LoanController(CrudInterface, ValidationMixin, LogMixin, ConfirmAction):
 
     def create(self):
         employee_controller = EmployeeController()
-        #prestamo_crud = PrestamoCRUD()
+        # prestamo_crud = PrestamoCRUD()
 
         identification = input("\nIngrese cedula del empleado: ")
-        employee_data = employee_controller.read_by_cedula(identification)    
+        employee_data = employee_controller.read_by_cedula(identification)
         if not employee_data:
             self.log_warn("Empleado no encontrado.")
             return
-        
+
         id_employee = employee_data["id"]
 
         # Mostrar datos del empleado
@@ -40,33 +44,39 @@ class LoanController(CrudInterface, ValidationMixin, LogMixin, ConfirmAction):
 
         for l in loans:
             if l.get("empleado_id") == id_employee and l.get("estado") != "pagado":
-                self.log_info("\nEste empleado ya tiene un préstamo pendiente. No puede solicitar otro.")
+                self.log_info(
+                    "\nEste empleado ya tiene un préstamo pendiente. No puede solicitar otro."
+                )
                 return
 
         # Pedir datos del préstamo
         loan_date = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
         amount = self.validate_amount(input("Ingrese monto del préstamo: "))
-        installment_number = self.validate_number_quotas(input("Ingrese número de cuotas: ")) 
-        quota = amount/installment_number
+        installment_number = self.validate_number_quotas(
+            input("Ingrese número de cuotas: ")
+        )
+        quota = amount / installment_number
         balance = amount
-        
+
         # Crear préstamo
         try:
             if self.confirm_action("Guardar"):
-                loan = Loan(id_employee,loan_date,amount,installment_number,quota,balance)
+                loan = Loan(
+                    id_employee, loan_date, amount, installment_number, quota, balance
+                )
                 id_prestamo = self.__storage.append(loan.to_dict())
                 self.log_success(f"Préstamo creado correctamente con ID: {id_prestamo}")
-        except ValueError as e:            
-            self.log_error(e)    
+        except ValueError as e:
+            self.log_error(e)
 
     def read(self):
-        print("\n=== Prestamos ===")        
+        ConsoleUtils.print_header("=== PRÉSTAMOS ===")
         if not self.all():
-            print("No hay clientes registrados")
+            ConsoleUtils.print_error("No hay préstamos registrados")
             return
         for loan_data in self.all():
             loan = Loan.from_dict(loan_data)
-            print(loan.display_loan)
+            ConsoleUtils.print_colored(loan.display_loan, Fore.BLUE)
 
     def update(self, id, data):
         return self.__storage.update(id, data)

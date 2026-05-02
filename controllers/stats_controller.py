@@ -1,155 +1,185 @@
+import os
 from functools import reduce
+from colorama import Fore, Style
 
-from core import JsonManager
-from models import Customer
+from core import JsonManager, ConsoleUtils
+from models import Employee, Loan, Pay
 
 
 class StatsController:
-    CUSTOMERS_FILE = "data/customers.json"
-    PRODUCTS_FILE = "data/products.json"
-    SALES_FILE = "data/sales.json"
+    EMPLOYEES_FILE = "data/Employee.json"
+    LOANS_FILE = "data/Loan.json"
+    PAYS_FILE = "data/Pay.json"
 
     def __init__(self):
-        self.customers = JsonManager(StatsController.CUSTOMERS_FILE).load()
-        self.products = JsonManager(StatsController.PRODUCTS_FILE).load()
-        self.sales = JsonManager(StatsController.SALES_FILE).load()
+        self.employees = JsonManager(StatsController.EMPLOYEES_FILE).load()
+        self.loans = JsonManager(StatsController.LOANS_FILE).load()
+        self.pays = JsonManager(StatsController.PAYS_FILE).load()
 
-    # Punto de entrada del reporte. Imprime las tres secciones.
     def show(self):
-        print("\n=== CONSULTA GENERAL / ESTADÍSTICAS ===")
-        self._customer_stats()
-        self._product_stats()
-        self._sale_stats()
+        ConsoleUtils.print_header("=== CONSULTA GENERAL / ESTADÍSTICAS ===")
+        self._employee_stats()
+        self._loan_stats()
+        self._pay_stats()
+        self._combined_stats()
 
-    # ---- Clientes ----
-    def _customer_stats(self):
-        print("\n-- Clientes --")
+    def _employee_stats(self):
+        ConsoleUtils.print_colored("-- Empleados --", Fore.GREEN, Style.BRIGHT)
 
-        if not self.customers:
-            print("  Sin clientes registrados")
+        if not self.employees:
+            ConsoleUtils.print_error("  Sin empleados registrados")
             return
 
-        # map + lambda: extrae los nombres.
-        names = list(map(lambda c: c["name"], self.customers))
+        total = len(self.employees)
 
-        # filter + lambda: clientes con identificación de longitud válida.
-        valid = list(
-            filter(
-                lambda c: len(c["identification"]) == Customer.IDENTIFICATION_LENGTH,
-                self.customers,
-            )
+        # Average salary
+        avg_salary = (
+            reduce(lambda acc, e: acc + e["sueldo"], self.employees, 0) / total
+            if total > 0
+            else 0
         )
 
-        # comprehension: clientes con identificación inválida.
-        invalid_ids = [
-            c["identification"]
-            for c in self.customers
-            if len(c["identification"]) != Customer.IDENTIFICATION_LENGTH
-        ]
+        # Highest salary employee
+        highest_salary_emp = reduce(
+            lambda a, b: a if a["sueldo"] >= b["sueldo"] else b, self.employees
+        )
 
-        print(f"  Total registrados: {len(self.customers)}")
-        print(f"  Nombres: {', '.join(names)}")
+        # Lowest salary employee
+        lowest_salary_emp = reduce(
+            lambda a, b: a if a["sueldo"] <= b["sueldo"] else b, self.employees
+        )
+
+        # Employees with salary above average
+        above_avg = list(filter(lambda e: e["sueldo"] > avg_salary, self.employees))
+
+        print(f"  Total empleados: {Fore.YELLOW}{total}{Style.RESET_ALL}")
+        print(f"  Salario promedio: {Fore.YELLOW}{avg_salary:.2f}{Style.RESET_ALL}")
         print(
-            f"  Con identificación válida ({Customer.IDENTIFICATION_LENGTH} dígitos): {len(valid)}"
+            f"  Empleado con mayor salario: {Fore.YELLOW}{highest_salary_emp['nombre']} ({highest_salary_emp['sueldo']:.2f}){Style.RESET_ALL}"
         )
-        print(f"  Identificaciones inválidas: {invalid_ids if invalid_ids else '—'}")
+        print(
+            f"  Empleado con menor salario: {Fore.YELLOW}{lowest_salary_emp['nombre']} ({lowest_salary_emp['sueldo']:.2f}){Style.RESET_ALL}"
+        )
+        print(
+            f"  Empleados con salario por encima del promedio: {Fore.YELLOW}{len(above_avg)}{Style.RESET_ALL}"
+        )
 
-    # ---- Productos ----
-    def _product_stats(self):
-        print("\n-- Productos --")
+    def _loan_stats(self):
+        print(Fore.BLUE + Style.BRIGHT + "\n-- Préstamos --" + Style.RESET_ALL)
 
-        if not self.products:
-            print("  Sin productos registrados")
+        if not self.loans:
+            print("  Sin préstamos registrados")
             return
 
-        total = len(self.products)
+        total = len(self.loans)
 
-        # reduce + lambda: valor total del inventario (Σ price * stock).
-        inventory_value = reduce(
-            lambda acc, p: acc + p["price"] * p["stock"], self.products, 0
+        # Total amount loaned
+        total_amount = reduce(lambda acc, l: acc + l["monto"], self.loans, 0)
+
+        # Average loan amount
+        avg_amount = total_amount / total if total > 0 else 0
+
+        # Pending loans
+        pending = list(filter(lambda l: l["estado"] == "pendiente", self.loans))
+
+        # Paid loans
+        paid = list(filter(lambda l: l["estado"] == "pagado", self.loans))
+
+        # Highest loan
+        highest_loan = reduce(
+            lambda a, b: a if a["monto"] >= b["monto"] else b, self.loans
         )
 
-        # reduce + lambda: precio promedio.
-        avg_price = reduce(lambda acc, p: acc + p["price"], self.products, 0) / total
+        # Loans by employee
+        loans_by_emp = {}
+        for l in self.loans:
+            emp_id = l["empleado_id"]
+            loans_by_emp[emp_id] = loans_by_emp.get(emp_id, 0) + 1
 
-        # reduce + lambda: producto más caro.
-        most_expensive = reduce(
-            lambda a, b: a if a["price"] >= b["price"] else b, self.products
-        )
-
-        # filter + lambda: productos sin stock.
-        out_of_stock = list(filter(lambda p: p["stock"] == 0, self.products))
-
-        # comprehension: nombres de productos disponibles.
-        in_stock_names = [p["name"] for p in self.products if p["stock"] > 0]
-
-        # map + lambda: pares (nombre, valor en inventario).
-        valuations = list(
-            map(lambda p: (p["name"], round(p["price"] * p["stock"], 2)), self.products)
-        )
-
-        print(f"  Total registrados: {total}")
-        print(f"  Valor total del inventario: {inventory_value:.2f}")
-        print(f"  Precio promedio: {avg_price:.2f}")
+        print(f"  Total préstamos: {Fore.YELLOW}{total}{Style.RESET_ALL}")
         print(
-            f"  Producto más caro: {most_expensive['name']} ({most_expensive['price']:.2f})"
+            f"  Monto total prestado: {Fore.YELLOW}{total_amount:.2f}{Style.RESET_ALL}"
         )
-        print(f"  Productos sin stock: {len(out_of_stock)}")
         print(
-            f"  Productos con stock disponible: {', '.join(in_stock_names) if in_stock_names else '—'}"
+            f"  Monto promedio por préstamo: {Fore.YELLOW}{avg_amount:.2f}{Style.RESET_ALL}"
         )
-        print(f"  Valor por producto: {valuations}")
+        print(f"  Préstamos pendientes: {Fore.YELLOW}{len(pending)}{Style.RESET_ALL}")
+        print(f"  Préstamos pagados: {Fore.YELLOW}{len(paid)}{Style.RESET_ALL}")
+        print(
+            f"  Préstamo de mayor monto: {Fore.YELLOW}ID {highest_loan['id']} ({highest_loan['monto']:.2f}){Style.RESET_ALL}"
+        )
+        print(f"  Préstamos por empleado: {Fore.YELLOW}{loans_by_emp}{Style.RESET_ALL}")
 
-    # ---- Ventas ----
-    def _sale_stats(self):
-        print("\n-- Ventas --")
+    def _pay_stats(self):
+        print(Fore.MAGENTA + Style.BRIGHT + "\n-- Pagos --" + Style.RESET_ALL)
 
-        if not self.sales:
-            print("  Sin ventas registradas")
+        if not self.pays:
+            print("  Sin pagos registrados")
             return
 
-        total = len(self.sales)
+        total = len(self.pays)
 
-        # reduce + lambda: ingreso total acumulado.
-        total_revenue = reduce(lambda acc, s: acc + s["total"], self.sales, 0)
+        # Total amount paid
+        total_paid = reduce(lambda acc, p: acc + p["valor_pago"], self.pays, 0)
 
-        avg_sale = total_revenue / total
+        # Average payment
+        avg_payment = total_paid / total if total > 0 else 0
 
-        # reduce + lambda: venta de mayor monto.
-        max_sale = reduce(lambda a, b: a if a["total"] >= b["total"] else b, self.sales)
-
-        # comprehension: IDs de ventas por encima del promedio.
-        above_avg_ids = [s["sale_id"] for s in self.sales if s["total"] > avg_sale]
-
-        # reduce con comprehension anidada: total de unidades vendidas.
-        total_units = reduce(
-            lambda acc, s: acc + sum(item["quantity"] for item in s["items"]),
-            self.sales,
-            0,
+        # Highest payment
+        highest_pay = reduce(
+            lambda a, b: a if a["valor_pago"] >= b["valor_pago"] else b, self.pays
         )
 
-        # dict comprehension: unidades vendidas por producto (agregado).
-        all_items = [item for s in self.sales for item in s["items"]]
-        product_names = {item["name"] for item in all_items}
-        units_by_product = {
-            name: reduce(
-                lambda acc, it: acc + (it["quantity"] if it["name"] == name else 0),
-                all_items,
-                0,
-            )
-            for name in product_names
-        }
+        # Payments by loan
+        pays_by_loan = {}
+        for p in self.pays:
+            loan_id = p["prestamo_id"]
+            pays_by_loan[loan_id] = pays_by_loan.get(loan_id, 0) + 1
 
-        # max sobre items() con lambda como key: producto más vendido.
-        top_product = max(units_by_product.items(), key=lambda kv: kv[1])
-
-        print(f"  Total ventas registradas: {total}")
-        print(f"  Ingreso total: {total_revenue:.2f}")
-        print(f"  Venta promedio: {avg_sale:.2f}")
-        print(f"  Venta más alta: #{max_sale['sale_id']} ({max_sale['total']:.2f})")
+        print(f"  Total pagos: {Fore.YELLOW}{total}{Style.RESET_ALL}")
+        print(f"  Monto total pagado: {Fore.YELLOW}{total_paid:.2f}{Style.RESET_ALL}")
+        print(f"  Pago promedio: {Fore.YELLOW}{avg_payment:.2f}{Style.RESET_ALL}")
         print(
-            f"  Ventas por encima del promedio: {above_avg_ids if above_avg_ids else '—'}"
+            f"  Pago de mayor monto: {Fore.YELLOW}ID {highest_pay['id']} ({highest_pay['valor_pago']:.2f}){Style.RESET_ALL}"
         )
-        print(f"  Unidades totales vendidas: {total_units}")
-        print(f"  Unidades por producto: {units_by_product}")
-        print(f"  Producto más vendido: {top_product[0]} ({top_product[1]} unid.)")
+        print(f"  Pagos por préstamo: {Fore.YELLOW}{pays_by_loan}{Style.RESET_ALL}")
+
+    def _combined_stats(self):
+        print(
+            Fore.RED
+            + Style.BRIGHT
+            + "\n-- Estadísticas Combinadas --"
+            + Style.RESET_ALL
+        )
+
+        # Total employees with loans
+        emp_with_loans = set(l["empleado_id"] for l in self.loans)
+        print(
+            f"  Empleados con préstamos: {Fore.YELLOW}{len(emp_with_loans)}{Style.RESET_ALL}"
+        )
+
+        # Average loans per employee
+        avg_loans_per_emp = (
+            len(self.loans) / len(self.employees) if self.employees else 0
+        )
+        print(
+            f"  Promedio de préstamos por empleado: {Fore.YELLOW}{avg_loans_per_emp:.2f}{Style.RESET_ALL}"
+        )
+
+        # Total balance remaining
+        total_balance = reduce(lambda acc, l: acc + l["saldo"], self.loans, 0)
+        print(
+            f"  Saldo total pendiente: {Fore.YELLOW}{total_balance:.2f}{Style.RESET_ALL}"
+        )
+
+        # Loans with payments
+        loans_with_pays = set(p["prestamo_id"] for p in self.pays)
+        print(
+            f"  Préstamos con pagos: {Fore.YELLOW}{len(loans_with_pays)}{Style.RESET_ALL}"
+        )
+
+        # Average payments per loan
+        avg_pays_per_loan = len(self.pays) / len(self.loans) if self.loans else 0
+        print(
+            f"  Promedio de pagos por préstamo: {Fore.YELLOW}{avg_pays_per_loan:.2f}{Style.RESET_ALL}"
+        )
