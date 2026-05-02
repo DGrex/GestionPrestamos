@@ -1,5 +1,6 @@
 class Pay:
-    def __init__(self, loan_id, payment_value, payment_date):
+    def __init__(self, loan_id, payment_value, payment_date, id_pay:int = 0):
+        self.__id_pay = id_pay
         self.__loan_id = loan_id
         self.__payment_value = payment_value
         self.__payment_date = payment_date
@@ -33,6 +34,10 @@ class Pay:
     def payment_date(self, value):
         self.__payment_date = value
 
+    @property
+    def display_pay(self):
+        return f"ID {self.__id_pay} - ID Prestamo: {self.__loan_id} - Pago: {self.__payment_value} - Fecha de Pago: {self.__payment_date}"
+
     # Diccionario con claves en español
     def to_dict(self):
         return {
@@ -40,3 +45,13 @@ class Pay:
             "valor_pago": self.__payment_value,
             "fecha_pago": self.__payment_date,
         }
+
+    @staticmethod
+    def from_dict(data):
+        return Pay(               
+            id_pay = data["id"],
+            loan_id = data["prestamo_id"],
+            payment_value = data["valor_pago"],
+            payment_date = data["fecha_pago"],
+        ) 
+

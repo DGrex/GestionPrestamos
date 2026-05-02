@@ -1,5 +1,6 @@
 class Loan:
-    def __init__(self, employee_id:int, loan_date, amount:float, installment_number:int, quota:int, balance:float, status:str ="pendiente"):
+    def __init__(self, employee_id:int, loan_date, amount:float, installment_number:int, quota:int, balance:float, status:str ="pendiente", id_loan:int=0):
+        self.__id_loan = id_loan
         self.__employee_id = employee_id
         self.__amount = amount
         self.__installment_number = installment_number
@@ -76,6 +77,10 @@ class Loan:
         if value not in ("pagado", "pendiente"):
             raise ValueError("Estado desconocido.")
         self.__status = value
+    
+    @property
+    def display_loan(self):
+        return f"ID {self.__id_loan} - ID Empleado: {self.__employee_id} - Monto: {self.__amount} - Por pagar: {self.__balance} - Estado: {self.__status}"
 
     # Register payment
     def register_payment(self, payment_value):
@@ -99,3 +104,16 @@ class Loan:
             "saldo": self.__balance,
             "estado": self.__status,
         }
+    
+    @staticmethod
+    def from_dict(data):
+        return Loan(               
+        id_loan = data["id"],
+        employee_id = data["empleado_id"],
+        amount = data["monto"],
+        installment_number = data["numero_cuotas"],
+        loan_date = data["fecha_prestamo"],
+        quota = data["cuota"],
+        balance = data["saldo"],
+        status = data["estado"]  
+        ) 

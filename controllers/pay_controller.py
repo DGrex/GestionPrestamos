@@ -8,6 +8,7 @@ from core import (
 )
 from controllers import EmployeeController, LoanController
 from models import Pay , Loan
+from datetime import datetime
 
 
 class PayController(CrudInterface, ValidationMixin, LogMixin, ConfirmAction):
@@ -62,6 +63,7 @@ class PayController(CrudInterface, ValidationMixin, LogMixin, ConfirmAction):
         # Pedir valor del pago
 
         value_pay = self.validate_amount(input("Ingrese valor del pago: "),"Pago")
+        pay_date = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
         # Usar el método de la clase Prestamo
         loan = Loan(
             loan_data["empleado_id"],
@@ -84,15 +86,22 @@ class PayController(CrudInterface, ValidationMixin, LogMixin, ConfirmAction):
         # Guardar cambios en préstamo
         loan_controller.update(loan_data["id"], loan.to_dict())
         # Guardar registro del pago
-        self.__storage.append({"prestamo_id": loan_data["id"], "valor_pago": value_pay})
+        pay = Pay(loan_data["id"], value_pay, pay_date)
+        
+        self.__storage.append(pay.to_dict())
 
         self.log_success("\nPago registrado correctamente.")
         self.log_info(f"Saldo restante: {loan.to_dict()['saldo']}")
         self.log_info(f"Estado del préstamo: {loan.to_dict()['estado']}")
 
-    def read(self, id):
-        pagos = self.__storage.load()
-        return next((p for p in pagos if p["id"] == id), None)
+    def read(self):
+        print("\n=== EMPLEADOS ===")        
+        if not self.all():
+            print("No hay clientes registrados")
+            return
+        for pay_data in self.all():
+            pay = Pay.from_dict(pay_data)
+            print(pay.display_pay)
 
     def update(self, id, data):
         raise NotImplementedError("Los pagos no se pueden actualizar.")

@@ -59,9 +59,14 @@ class LoanController(CrudInterface, ValidationMixin, LogMixin, ConfirmAction):
         except ValueError as e:            
             self.log_error(e)    
 
-    def read(self, id):
-        prestamos = self.__storage.load()
-        return next((p for p in prestamos if p["id"] == id), None)
+    def read(self):
+        print("\n=== Prestamos ===")        
+        if not self.all():
+            print("No hay clientes registrados")
+            return
+        for loan_data in self.all():
+            loan = Loan.from_dict(loan_data)
+            print(loan.display_loan)
 
     def update(self, id, data):
         return self.__storage.update(id, data)

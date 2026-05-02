@@ -10,7 +10,6 @@ from utils import confirmar_accion
 
 crud = EmpleadoCRUD()
 
-
 def show_menu(title, options):
     while True:
         print("\n========================================")

@@ -18,9 +18,14 @@ class EmployeeController(CrudInterface, ValidationMixin, LogMixin, ConfirmAction
     def all(self):
         return self.__storage.load()
     
-    def read(self, id):
-        empleados = self.__storage.load()
-        return next((e for e in empleados if e["id"] == id), None)
+    def read(self):
+        print("\n=== EMPLEADOS ===")        
+        if not self.all():
+            print("No hay clientes registrados")
+            return
+        for employee_data in self.all():
+            employee = Employee.from_dict(employee_data)
+            print(employee.display_name)
 
     def read_by_cedula(self, identification):
         employee = self.__storage.load()

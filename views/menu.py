@@ -53,7 +53,8 @@ class Menu:
         self.show_menu(
             "Menú Empleado",
             [
-                {"label": "Nuevo Empleado", "action":  lambda: safe_action(self.employee_controller.create)},
+                {"label": "Listar Empleados", "action": lambda: safe_action(self.employee_controller.read)},
+                {"label": "Nuevo Empleado", "action":  lambda: safe_action(self.employee_controller.create)},                
                 {"label": "Actualizar Empleado", "action": lambda: safe_action(self.employee_controller.update)},
                 {"label": "Eliminar Empleado", "action": lambda: safe_action(self.employee_controller.delete)},
                 {"label": "Atrás", "action": "break"},
@@ -65,6 +66,7 @@ class Menu:
         self.show_menu(
             "Menú Préstamo",
             [
+                {"label": "Listar Préstamos", "action": lambda: safe_action(self.loan_controller.read)},
                 {"label": "Nuevo Préstamo", "action": lambda: safe_action(self.loan_controller.create)},
                 {"label": "Atrás", "action": "break"},
                 {"label": "Salir", "action": "exit"},
@@ -75,6 +77,7 @@ class Menu:
         self.show_menu(
             "Menú Pago",
             [
+                {"label": "Listar Pagos", "action": lambda: safe_action(self.pay_controller.read)},
                 {"label": "Nuevo Pago", "action": lambda: safe_action(self.pay_controller.create)},
                 {"label": "Atrás", "action": "break"},
                 {"label": "Salir", "action": "exit"},

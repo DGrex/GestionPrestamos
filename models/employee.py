@@ -1,7 +1,7 @@
 class Employee():
 
-    def __init__(self, name: str, identification: str, salary: float):
-
+    def __init__(self, name: str, identification: str, salary: float, id_employee:int = 0):
+        self.__id_employee = id_employee
         self.__name = name
         self.__identification = identification
         self.__salary = salary
@@ -32,6 +32,10 @@ class Employee():
     @salary.setter
     def salary(self, new_salary):
         self.__salary = new_salary
+    
+    @property
+    def display_name(self):
+        return f"ID {self.__id_employee} - {self.__name}"
 
     # Método para exportar a dict (para JSON)
     def to_dict(self):
@@ -44,8 +48,9 @@ class Employee():
     # Método estático: factoría que reconstruye un Customer desde un dict (JSON). 
     @staticmethod
     def from_dict(data):
-        return Employee(
-            name=data["name"],            
-            identification=data["identification"],
-            salary=data["salary"]
+        return Employee(            
+            name=data["nombre"],            
+            identification=data["cedula"],
+            salary=data["sueldo"],
+            id_employee=data["id"]
         ) 
