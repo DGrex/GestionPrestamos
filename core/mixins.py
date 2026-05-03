@@ -1,5 +1,5 @@
 import re
-from colorama import Fore
+from .colors import Fore
 
 
 class ValidationMixin:

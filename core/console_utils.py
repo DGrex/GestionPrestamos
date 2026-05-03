@@ -1,8 +1,5 @@
 import os
-from colorama import Fore, Back, Style, init
-
-# Initialize colorama
-init(autoreset=True)
+from .colors import Fore, Back, Style
 
 
 class ConsoleUtils:

@@ -7,10 +7,10 @@ from core import (
     ConsoleUtils,
     confirm_action,
 )
+from core.colors import Fore
 from models import Loan
 from controllers import EmployeeController
 from datetime import datetime
-from colorama import Fore
 
 
 class LoanController(CrudInterface, ValidationMixin, LogMixin):

@@ -1,6 +1,4 @@
-import os
-from functools import reduce
-from colorama import Fore, Style
+from core.colors import Fore, Style
 
 from core import JsonManager, JsonManagerError, ConsoleUtils
 from models import Employee, Loan, Pay
@@ -33,39 +31,82 @@ class StatsController:
 
     def show(self):
         ConsoleUtils.print_header("=== CONSULTA GENERAL / ESTADÍSTICAS ===")
-        self._employee_stats()
-        self._loan_stats()
-        self._pay_stats()
-        self._combined_stats()
+        for step in (
+            self._employee_stats,
+            self._loan_stats,
+            self._pay_stats,
+            self._combined_stats,
+        ):
+            try:
+                step()
+            except Exception as e:
+                ConsoleUtils.print_error(f"Error en estadísticas: {e}")
+
+    def _safe_employee_records(self):
+        valid = []
+        for item in self.employees:
+            if not isinstance(item, dict):
+                continue
+            try:
+                valid.append(
+                    {
+                        "nombre": str(item["nombre"]),
+                        "sueldo": float(item["sueldo"]),
+                    }
+                )
+            except (KeyError, TypeError, ValueError):
+                continue
+        return valid
+
+    def _safe_loan_records(self):
+        valid = []
+        for item in self.loans:
+            if not isinstance(item, dict):
+                continue
+            try:
+                valid.append(
+                    {
+                        "id": int(item["id"]),
+                        "empleado_id": int(item["empleado_id"]),
+                        "monto": float(item["monto"]),
+                        "estado": str(item["estado"]),
+                        "saldo": float(item["saldo"]),
+                    }
+                )
+            except (KeyError, TypeError, ValueError):
+                continue
+        return valid
+
+    def _safe_pay_records(self):
+        valid = []
+        for item in self.pays:
+            if not isinstance(item, dict):
+                continue
+            try:
+                valid.append(
+                    {
+                        "id": int(item["id"]),
+                        "prestamo_id": int(item["prestamo_id"]),
+                        "valor_pago": float(item["valor_pago"]),
+                    }
+                )
+            except (KeyError, TypeError, ValueError):
+                continue
+        return valid
 
     def _employee_stats(self):
         ConsoleUtils.print_colored("-- Empleados --", Fore.GREEN, Style.BRIGHT)
 
-        if not self.employees:
-            ConsoleUtils.print_error("  Sin empleados registrados")
+        employees = self._safe_employee_records()
+        if not employees:
+            ConsoleUtils.print_error("  Sin empleados registrados o datos inválidos")
             return
 
-        total = len(self.employees)
-
-        # Average salary
-        avg_salary = (
-            reduce(lambda acc, e: acc + e["sueldo"], self.employees, 0) / total
-            if total > 0
-            else 0
-        )
-
-        # Highest salary employee
-        highest_salary_emp = reduce(
-            lambda a, b: a if a["sueldo"] >= b["sueldo"] else b, self.employees
-        )
-
-        # Lowest salary employee
-        lowest_salary_emp = reduce(
-            lambda a, b: a if a["sueldo"] <= b["sueldo"] else b, self.employees
-        )
-
-        # Employees with salary above average
-        above_avg = list(filter(lambda e: e["sueldo"] > avg_salary, self.employees))
+        total = len(employees)
+        avg_salary = sum(e["sueldo"] for e in employees) / total
+        highest_salary_emp = max(employees, key=lambda e: e["sueldo"])
+        lowest_salary_emp = min(employees, key=lambda e: e["sueldo"])
+        above_avg = [e for e in employees if e["sueldo"] > avg_salary]
 
         print(f"  Total empleados: {Fore.YELLOW}{total}{Style.RESET_ALL}")
         print(f"  Salario promedio: {Fore.YELLOW}{avg_salary:.2f}{Style.RESET_ALL}")
@@ -82,34 +123,20 @@ class StatsController:
     def _loan_stats(self):
         print(Fore.BLUE + Style.BRIGHT + "\n-- Préstamos --" + Style.RESET_ALL)
 
-        if not self.loans:
-            print("  Sin préstamos registrados")
+        loans = self._safe_loan_records()
+        if not loans:
+            print("  Sin préstamos registrados o datos inválidos")
             return
 
-        total = len(self.loans)
-
-        # Total amount loaned
-        total_amount = reduce(lambda acc, l: acc + l["monto"], self.loans, 0)
-
-        # Average loan amount
+        total = len(loans)
+        total_amount = sum(l["monto"] for l in loans)
         avg_amount = total_amount / total if total > 0 else 0
-
-        # Pending loans
-        pending = list(filter(lambda l: l["estado"] == "pendiente", self.loans))
-
-        # Paid loans
-        paid = list(filter(lambda l: l["estado"] == "pagado", self.loans))
-
-        # Highest loan
-        highest_loan = reduce(
-            lambda a, b: a if a["monto"] >= b["monto"] else b, self.loans
-        )
-
-        # Loans by employee
+        pending = [l for l in loans if l["estado"] == "pendiente"]
+        paid = [l for l in loans if l["estado"] == "pagado"]
+        highest_loan = max(loans, key=lambda l: l["monto"])
         loans_by_emp = {}
-        for l in self.loans:
-            emp_id = l["empleado_id"]
-            loans_by_emp[emp_id] = loans_by_emp.get(emp_id, 0) + 1
+        for l in loans:
+            loans_by_emp[l["empleado_id"]] = loans_by_emp.get(l["empleado_id"], 0) + 1
 
         print(f"  Total préstamos: {Fore.YELLOW}{total}{Style.RESET_ALL}")
         print(
@@ -128,28 +155,18 @@ class StatsController:
     def _pay_stats(self):
         print(Fore.MAGENTA + Style.BRIGHT + "\n-- Pagos --" + Style.RESET_ALL)
 
-        if not self.pays:
-            print("  Sin pagos registrados")
+        pays = self._safe_pay_records()
+        if not pays:
+            print("  Sin pagos registrados o datos inválidos")
             return
 
-        total = len(self.pays)
-
-        # Total amount paid
-        total_paid = reduce(lambda acc, p: acc + p["valor_pago"], self.pays, 0)
-
-        # Average payment
+        total = len(pays)
+        total_paid = sum(p["valor_pago"] for p in pays)
         avg_payment = total_paid / total if total > 0 else 0
-
-        # Highest payment
-        highest_pay = reduce(
-            lambda a, b: a if a["valor_pago"] >= b["valor_pago"] else b, self.pays
-        )
-
-        # Payments by loan
+        highest_pay = max(pays, key=lambda p: p["valor_pago"])
         pays_by_loan = {}
-        for p in self.pays:
-            loan_id = p["prestamo_id"]
-            pays_by_loan[loan_id] = pays_by_loan.get(loan_id, 0) + 1
+        for p in pays:
+            pays_by_loan[p["prestamo_id"]] = pays_by_loan.get(p["prestamo_id"], 0) + 1
 
         print(f"  Total pagos: {Fore.YELLOW}{total}{Style.RESET_ALL}")
         print(f"  Monto total pagado: {Fore.YELLOW}{total_paid:.2f}{Style.RESET_ALL}")
@@ -167,34 +184,31 @@ class StatsController:
             + Style.RESET_ALL
         )
 
-        # Total employees with loans
-        emp_with_loans = set(l["empleado_id"] for l in self.loans)
+        employees = self._safe_employee_records()
+        loans = self._safe_loan_records()
+        pays = self._safe_pay_records()
+
+        emp_with_loans = set(l["empleado_id"] for l in loans)
         print(
             f"  Empleados con préstamos: {Fore.YELLOW}{len(emp_with_loans)}{Style.RESET_ALL}"
         )
 
-        # Average loans per employee
-        avg_loans_per_emp = (
-            len(self.loans) / len(self.employees) if self.employees else 0
-        )
+        avg_loans_per_emp = len(loans) / len(employees) if employees else 0
         print(
             f"  Promedio de préstamos por empleado: {Fore.YELLOW}{avg_loans_per_emp:.2f}{Style.RESET_ALL}"
         )
 
-        # Total balance remaining
-        total_balance = reduce(lambda acc, l: acc + l["saldo"], self.loans, 0)
+        total_balance = sum(l["saldo"] for l in loans)
         print(
             f"  Saldo total pendiente: {Fore.YELLOW}{total_balance:.2f}{Style.RESET_ALL}"
         )
 
-        # Loans with payments
-        loans_with_pays = set(p["prestamo_id"] for p in self.pays)
+        loans_with_pays = set(p["prestamo_id"] for p in pays)
         print(
             f"  Préstamos con pagos: {Fore.YELLOW}{len(loans_with_pays)}{Style.RESET_ALL}"
         )
 
-        # Average payments per loan
-        avg_pays_per_loan = len(self.pays) / len(self.loans) if self.loans else 0
+        avg_pays_per_loan = len(pays) / len(loans) if loans else 0
         print(
             f"  Promedio de pagos por préstamo: {Fore.YELLOW}{avg_pays_per_loan:.2f}{Style.RESET_ALL}"
         )

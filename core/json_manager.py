@@ -12,8 +12,11 @@ class JsonManager:
 
     def __init__(self, filename):
         self.__filename = filename
+        directory = os.path.dirname(self.__filename)
+        if directory and not os.path.exists(directory):
+            os.makedirs(directory, exist_ok=True)
         if not os.path.exists(self.__filename):
-            with open(self.__filename, "w") as f:
+            with open(self.__filename, "w", encoding="utf-8") as f:
                 json.dump([], f)
 
     def __generate_id(self, data):
@@ -25,9 +28,12 @@ class JsonManager:
         return max_id + 1
 
     def load(self):
-        with open(self.__filename, "r") as f:
+        with open(self.__filename, "r", encoding="utf-8") as f:
+            content = f.read().strip()
+            if not content:
+                return []
             try:
-                return json.load(f)
+                return json.loads(content)
             except json.JSONDecodeError as e:
                 # Aquí lanzas tu propio error más descriptivo
                 raise JsonManagerError(

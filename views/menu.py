@@ -5,7 +5,7 @@ from controllers import (
     StatsController,
 )
 from core import LogMixin, ConsoleUtils, JsonManagerError
-from colorama import Fore
+from core.colors import Fore
 import sys
 
 log_mixin = LogMixin()

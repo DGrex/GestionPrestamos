@@ -7,8 +7,8 @@ from core import (
     ConsoleUtils,
     confirm_action,
 )
+from core.colors import Fore
 from models import Employee
-from colorama import Fore
 
 
 class EmployeeController(CrudInterface, ValidationMixin, LogMixin):

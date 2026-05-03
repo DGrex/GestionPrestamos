@@ -4,5 +4,11 @@
         "cedula": "1206011106",
         "sueldo": 1000.0,
         "id": 3
+    },
+    {
+        "nombre": "Denis Goyes",
+        "cedula": "1207279181",
+        "sueldo": 900.0,
+        "id": 4
     }
 ]
