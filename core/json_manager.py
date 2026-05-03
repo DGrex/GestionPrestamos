@@ -1,9 +1,12 @@
 import json
 import os
 
+
 class JsonManagerError(Exception):
     """Error personalizado para problemas con el archivo JSON."""
+
     pass
+
 
 class JsonManager:
     """
