@@ -1,11 +1,5 @@
 [
     {
-        "nombre": "Monica Moran",
-        "cedula": "1204233561",
-        "sueldo": 600.0,
-        "id": 2
-    },
-    {
         "nombre": "Lourdes",
         "cedula": "1206011106",
         "sueldo": 1000.0,

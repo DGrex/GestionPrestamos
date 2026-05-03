@@ -4,8 +4,8 @@ from core import (
     JsonManagerError,
     LogMixin,
     ValidationMixin,
-    ConfirmAction,
     ConsoleUtils,
+    confirm_action,
 )
 from models import Loan
 from controllers import EmployeeController
@@ -13,7 +13,7 @@ from datetime import datetime
 from colorama import Fore
 
 
-class LoanController(CrudInterface, ValidationMixin, LogMixin, ConfirmAction):
+class LoanController(CrudInterface, ValidationMixin, LogMixin):
     DATA_FILE = "data/Loan.json"
 
     def __init__(self):
@@ -64,14 +64,20 @@ class LoanController(CrudInterface, ValidationMixin, LogMixin, ConfirmAction):
 
         # Crear préstamo
         try:
-            if self.confirm_action("Guardar"):
-                loan = Loan(
-                    id_employee, loan_date, amount, installment_number, quota, balance
-                )
-                id_prestamo = self.__storage.append(loan.to_dict())
-                self.log_success(f"Préstamo creado correctamente con ID: {id_prestamo}")
+            return self._save_loan(
+                id_employee, loan_date, amount, installment_number, quota, balance
+            )
         except ValueError as e:
             self.log_error(e)
+
+    @confirm_action("¿Guardar préstamo? (s/n): ")
+    def _save_loan(
+        self, id_employee, loan_date, amount, installment_number, quota, balance
+    ):
+        loan = Loan(id_employee, loan_date, amount, installment_number, quota, balance)
+        id_prestamo = self.__storage.append(loan.to_dict())
+        self.log_success(f"Préstamo creado correctamente con ID: {id_prestamo}")
+        return id_prestamo
 
     def read(self):
         ConsoleUtils.print_header("=== PRÉSTAMOS ===")

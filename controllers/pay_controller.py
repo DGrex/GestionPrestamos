@@ -4,8 +4,8 @@ from core import (
     JsonManagerError,
     LogMixin,
     ValidationMixin,
-    ConfirmAction,
     ConsoleUtils,
+    confirm_action,
 )
 from controllers import EmployeeController, LoanController
 from models import Pay, Loan
@@ -13,7 +13,7 @@ from datetime import datetime
 from colorama import Fore
 
 
-class PayController(CrudInterface, ValidationMixin, LogMixin, ConfirmAction):
+class PayController(CrudInterface, ValidationMixin, LogMixin):
     DATA_FILE = "data/Pay.json"
 
     def __init__(self):
@@ -87,15 +87,14 @@ class PayController(CrudInterface, ValidationMixin, LogMixin, ConfirmAction):
             self.log_error(f"{e}")
             return
 
-        if not self.confirm_action("Guardar"):
-            return self.log_warn("Accion Cancelada")
-        # Guardar cambios en préstamo
+        self._confirm_payment_save(loan_data, loan, pay_date, value_pay)
+
+    @confirm_action("¿Guardar pago? (s/n): ")
+    def _confirm_payment_save(self, loan_data, loan, pay_date, value_pay):
+        loan_controller = LoanController()
         loan_controller.update(loan_data["id"], loan.to_dict())
-        # Guardar registro del pago
         pay = Pay(loan_data["id"], value_pay, pay_date)
-
         self.__storage.append(pay.to_dict())
-
         self.log_success("\nPago registrado correctamente.")
         self.log_info(f"Saldo restante: {loan.to_dict()['saldo']}")
         self.log_info(f"Estado del préstamo: {loan.to_dict()['estado']}")

@@ -4,14 +4,14 @@ from core import (
     JsonManagerError,
     LogMixin,
     ValidationMixin,
-    ConfirmAction,
     ConsoleUtils,
+    confirm_action,
 )
 from models import Employee
 from colorama import Fore
 
 
-class EmployeeController(CrudInterface, ValidationMixin, LogMixin, ConfirmAction):
+class EmployeeController(CrudInterface, ValidationMixin, LogMixin):
     DATA_FILE = "data/Employee.json"
 
     def __init__(self):
@@ -56,15 +56,16 @@ class EmployeeController(CrudInterface, ValidationMixin, LogMixin, ConfirmAction
 
         # Validar unicidad de cédula
         if any(e["cedula"] == identification for e in employee_data):
-            self.log_error("Ya existe un empleado con esa cédula")
             raise ValueError("Ya existe un empleado con esa cédula")
 
-        if self.confirm_action("Guardar"):
-            employee = Employee(name, identification, salary)
-            id_new = self.__storage.append(employee.to_dict())
+        return self._save_employee(name, identification, salary)
 
-            self.log_success(f"Empleado creado con ID: {id_new}")
-            return id_new
+    @confirm_action("¿Guardar empleado? (s/n): ")
+    def _save_employee(self, name, identification, salary):
+        employee = Employee(name, identification, salary)
+        id_new = self.__storage.append(employee.to_dict())
+        self.log_success(f"Empleado creado con ID: {id_new}")
+        return id_new
 
     def update(self):
         self.log_trace("Entrando a update()")
@@ -118,28 +119,27 @@ class EmployeeController(CrudInterface, ValidationMixin, LogMixin, ConfirmAction
                 setter(validation(new_value))
                 self.log_info(f"{label} actualizado en memoria")
             elif option == "4":
-                if self.confirm_action("Actualizar"):
-                    try:
-                        data_employee = self.__storage.load()
-                    except JsonManagerError as e:
-                        ConsoleUtils.print_error(str(e))
-                        break
-                    for e in data_employee:
-                        if (
-                            e["cedula"] == employee.identification
-                            and e["id"] != id_employee
-                        ):
-                            self.log_error("Ya existe otro empleado con esa cédula.")
-                            break
-                    else:
-                        self.__storage.update(id_employee, employee.to_dict())
-                        self.log_success("Cambios guardados correctamente.")
-                        break
+                self._update_employee(id_employee, employee)
+                break
             elif option == "5":
                 self.log_warn("Actualización cancelada por el usuario.")
                 break
             else:
                 self.log_warn("Opción inválida.")
+
+    @confirm_action("¿Actualizar empleado? (s/n): ")
+    def _update_employee(self, id_employee, employee):
+        try:
+            data_employee = self.__storage.load()
+        except JsonManagerError as e:
+            ConsoleUtils.print_error(str(e))
+            return
+        for e in data_employee:
+            if e["cedula"] == employee.identification and e["id"] != id_employee:
+                self.log_error("Ya existe otro empleado con esa cédula.")
+                return
+        self.__storage.update(id_employee, employee.to_dict())
+        self.log_success("Cambios guardados correctamente.")
 
     def delete(self):
         self.log_trace("Entrando a delete()")
@@ -173,12 +173,15 @@ class EmployeeController(CrudInterface, ValidationMixin, LogMixin, ConfirmAction
             opcion = input("Seleccione opción: ")
 
             if opcion == "4":
-                if self.confirm_action("Eliminar"):
-                    self.__storage.delete(id_employee)
-                    self.log_success("Empleado eliminado correctamente.")
-                    break
+                self._delete_employee(id_employee)
+                break
             elif opcion == "5":
                 self.log_warn("Eliminación cancelada por el usuario.")
                 break
             else:
                 self.log_warn("Opción inválida.")
+
+    @confirm_action("¿Eliminar empleado? (s/n): ")
+    def _delete_employee(self, id_employee):
+        self.__storage.delete(id_employee)
+        self.log_success("Empleado eliminado correctamente.")

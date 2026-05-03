@@ -1,17 +1,16 @@
 # Paquete de infraestructura transversal: persistencia, interfaces, mixins y decoradores.
-from .decorators import ask_continue
+from .decorators import  confirm_action
 from .interfaces import CrudInterface
 from .json_manager import JsonManager, JsonManagerError
-from .mixins import ValidationMixin, LogMixin, ConfirmAction
+from .mixins import ValidationMixin, LogMixin
 from .console_utils import ConsoleUtils
 
-__all__ = [
-    "ask_continue",
+__all__ = [    
+    "confirm_action",
     "CrudInterface",
     "JsonManagerError",
     "JsonManager",
     "ValidationMixin",
     "LogMixin",
-    "ConfirmAction",
     "ConsoleUtils",
 ]

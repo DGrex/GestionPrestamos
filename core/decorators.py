@@ -1,20 +1,19 @@
+from .mixins import LogMixin
+logMixin = LogMixin()
 # Decoradores transversales reutilizables por la capa de vistas y controladores.
 
-
-# Repite la ejecución de la función decorada mientras el usuario responda 's'
-# al mensaje de confirmación. Los retornos distintos de None se acumulan en
-# una lista que se devuelve al finalizar el bucle.
-def ask_continue(message="¿Desea continuar? (s/n): "):
+# Confirmación previa a la ejecución de la función decorada.
+def confirm_action(message="¿Está seguro de que desea continuar? (s/n): "):
     def decorator(func):
         def wrapper(*args, **kwargs):
-            results = []
             while True:
-                result = func(*args, **kwargs)
-                if result is not None:
-                    results.append(result)
-                if input(message).strip().lower() != "s":
-                    break
-            return results
+                respuesta = input(message).strip().lower()
+                if respuesta == "s":
+                    return func(*args, **kwargs)
+                if respuesta == "n":
+                    logMixin.log_info("Acción cancelada por el usuario.")
+                    return None
+                logMixin.log_error("Respuesta inválida. Use 's' para sí o 'n' para no.")
 
         return wrapper
 
