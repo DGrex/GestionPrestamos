@@ -1,3 +1,15 @@
 [
-
+  {
+    "prestamo_id": 1,
+    "valor_pago": 100.0,
+    "fecha_pago": "03/05/2026 22:14:10",
+    "id": 1
+  },
+  {
+    "prestamo_id": 1,
+    "valor_pago": 100.0,
+    "fecha_pago": "03/05/2026 22:14:32",
+    "id": 2
+  }
+  
 ]
