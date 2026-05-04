@@ -10,26 +10,34 @@ class StatsController:
     PAYS_FILE = "data/Pay.json"
 
     def __init__(self):
+        # Inicializa listas vacías; los datos se cargan en show()
         self.employees = []
         self.loans = []
         self.pays = []
 
+    def reload_data(self):
+        """Recarga los datos desde los archivos JSON para sincronizar con actualizaciones."""
         try:
             self.employees = JsonManager(StatsController.EMPLOYEES_FILE).load()
         except JsonManagerError as e:
             ConsoleUtils.print_error(str(e))
+            self.employees = []
 
         try:
             self.loans = JsonManager(StatsController.LOANS_FILE).load()
         except JsonManagerError as e:
             ConsoleUtils.print_error(str(e))
+            self.loans = []
 
         try:
             self.pays = JsonManager(StatsController.PAYS_FILE).load()
         except JsonManagerError as e:
             ConsoleUtils.print_error(str(e))
+            self.pays = []
 
     def show(self):
+        # Recarga los datos para reflejar cualquier actualización
+        self.reload_data()
         ConsoleUtils.print_header("=== CONSULTA GENERAL / ESTADÍSTICAS ===")
         for step in (
             self._employee_stats,

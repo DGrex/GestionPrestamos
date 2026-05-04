@@ -1,15 +1,5 @@
 [
     {
-        "empleado_id": 4,
-        "fecha_prestamo": "03/05/2026 22:10:26",
-        "monto": 200.0,
-        "numero_cuotas": 3,
-        "cuota": 66.66666666666667,
-        "saldo": 0.0,
-        "estado": "pendiente",
-        "id": 1
-    },
-    {
         "empleado_id": 5,
         "fecha_prestamo": "03/05/2026 22:34:14",
         "monto": 400.0,
@@ -18,5 +8,25 @@
         "saldo": 400.0,
         "estado": "pendiente",
         "id": 2
+    },
+    {
+        "empleado_id": 6,
+        "fecha_prestamo": "03/05/2026 22:44:46",
+        "monto": 256.25,
+        "numero_cuotas": 2,
+        "cuota": 128.125,
+        "saldo": 200.79,
+        "estado": "pendiente",
+        "id": 3
+    },
+    {
+        "empleado_id": 4,
+        "fecha_prestamo": "03/05/2026 22:57:46",
+        "monto": 800.0,
+        "numero_cuotas": 3,
+        "cuota": 266.67,
+        "saldo": 800.0,
+        "estado": "pendiente",
+        "id": 4
     }
 ]

@@ -5,10 +5,11 @@
         "sueldo": 1000.0,
         "id": 4
     },
+    
     {
         "nombre": "Monica",
         "cedula": "1204233561",
-        "sueldo": 800.0,
+        "sueldo": 2000.0,
         "id": 5
     },
     {

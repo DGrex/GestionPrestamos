@@ -59,7 +59,7 @@ class LoanController(CrudInterface, ValidationMixin, LogMixin):
         installment_number = self.validate_number_quotas(
             input("Ingrese número de cuotas: ")
         )
-        quota = amount / installment_number
+        quota = round((amount / installment_number), 2)
         balance = amount
 
         # Crear préstamo
@@ -77,6 +77,11 @@ class LoanController(CrudInterface, ValidationMixin, LogMixin):
         loan = Loan(id_employee, loan_date, amount, installment_number, quota, balance)
         id_prestamo = self.__storage.append(loan.to_dict())
         self.log_success(f"Préstamo creado correctamente con ID: {id_prestamo}")
+        # Muestra información adicional del préstamo registrado
+        self.log_info(f"Monto del préstamo: {loan.amount:.2f}")
+        self.log_info(f"Número de cuotas: {loan.installment_number}")
+        self.log_info(f"Cuota mensual: {loan.quota:.2f}")
+        self.log_info(f"Saldo inicial: {loan.balance:.2f}")
         return id_prestamo
 
     def read(self):
