@@ -1,0 +1,164 @@
+@startuml Diagrama de Clases
+package models {
+    class Employee {
+        - __id_employee: int
+        - __name: str
+        - __identification: str
+        - __salary: float
+        + name: str
+        + identification: str
+        + salary: float
+        + display_name: str
+        + to_dict(): dict
+        + from_dict(data: dict): Employee
+    }
+
+    class Loan {
+        - __id_loan: int
+        - __employee_id: int
+        - __amount: float
+        - __installment_number: int
+        - __loan_date: str
+        - __quota: float
+        - __balance: float
+        - __status: str
+        + employee_id: int
+        + amount: float
+        + installment_number: int
+        + quota: float
+        + balance: float
+        + loan_date: str
+        + status: str
+        + display_loan: str
+        + register_payment(payment_value: float): void
+        + to_dict(): dict
+        + from_dict(data: dict): Loan
+    }
+
+    class Pay {
+        - __id_pay: int
+        - __loan_id: int
+        - __payment_value: float
+        - __payment_date: str
+        + loan_id: int
+        + payment_value: float
+        + payment_date: str
+        + display_pay: str
+        + to_dict(): dict
+        + from_dict(data: dict): Pay
+    }
+}
+
+package controllers {
+    class EmployeeController {
+        - __storage: JsonManager
+        + all(): list
+        + create(): void
+        + read(): void
+        + update(id: int, data: dict): void
+        + delete(id: int): void
+        + read_by_cedula(cedula: str): dict
+    }
+
+    class LoanController {
+        - __storage: JsonManager
+        + all(): list
+        + create(): int
+        + read(): void
+        + update(id: int, data: dict): void
+        + delete(id: int): void
+    }
+
+    class PayController {
+        - __storage: JsonManager
+        + all(): list
+        + create(): int
+        + read(): void
+        + update(id: int, data: dict): void
+        + delete(id: int): void
+    }
+
+    class StatsController {
+        + show(): void
+    }
+}
+
+package views {
+    class Menu {
+        - employee_controller: EmployeeController
+        - loan_controller: LoanController
+        - pay_controller: PayController
+        - stats_controller: StatsController
+        + show_menu(title: str, options: list): void
+        + optionMenu(): void
+        + employeeMenu(): void
+        + loan_menu(): void
+        + payment_menu(): void
+    }
+}
+
+package core {
+    abstract class CrudInterface {
+        + {abstract} create(data): void
+        + {abstract} read(id): dict
+        + {abstract} update(id, data): void
+        + {abstract} delete(id): void
+    }
+
+    class ValidationMixin {
+        + {static} validate_identification(cedula: str): str
+        + {static} validate_salary(valor, limite_max): float
+        + {static} validate_name(nombre, max_length): str
+        + {static} validate_amount(monto, field_name): float
+        + {static} validate_number_quotas(cuotas): int
+    }
+
+    class LogMixin {
+        + log_info(message: str): void
+        + log_warn(message: str): void
+        + log_error(message: str): void
+        + log_success(message: str): void
+    }
+
+    class JsonManager {
+        + load(): list
+        + append(data: dict): int
+        + update(id: int, data: dict): void
+        + delete(id: int): void
+    }
+
+    class ConsoleUtils {
+        + {static} print_header(text: str): void
+        + {static} print_error(text: str): void
+        + {static} print_colored(text: str, color): void
+        + {static} clear_screen(): void
+        + {static} gotoxy(x: int, y: int): void
+    }
+}
+
+EmployeeController ..|> CrudInterface
+EmployeeController ..|> ValidationMixin
+EmployeeController ..|> LogMixin
+
+LoanController ..|> CrudInterface
+LoanController ..|> ValidationMixin
+LoanController ..|> LogMixin
+
+PayController ..|> CrudInterface
+PayController ..|> ValidationMixin
+PayController ..|> LogMixin
+
+Menu --> EmployeeController
+Menu --> LoanController
+Menu --> PayController
+Menu --> StatsController
+
+Loan --> Employee : employee_id
+Pay --> Loan : loan_id
+
+EmployeeController --> JsonManager : uses
+LoanController --> JsonManager : uses
+PayController --> JsonManager : uses
+
+LoanController --> EmployeeController : uses
+@enduml
