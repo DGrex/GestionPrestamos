@@ -5,6 +5,8 @@ try:
 except ImportError:
 
     class _ColorStub:
+        NORMAL = ""
+        BRIGHT = ""
         RESET_ALL = ""
         BLACK = ""
         RED = ""
@@ -22,6 +24,7 @@ except ImportError:
         LIGHTMAGENTA_EX = ""
         LIGHTCYAN_EX = ""
         LIGHTWHITE_EX = ""
+        
 
     Fore = _ColorStub()
     Back = _ColorStub()

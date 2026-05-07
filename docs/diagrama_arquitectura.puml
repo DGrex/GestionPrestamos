@@ -1,4 +1,4 @@
-@startuml
+@startuml arquitectura
 title Sistema de Gestión de Préstamos - Arquitectura en Capas
 
 skinparam packageStyle rectangle
