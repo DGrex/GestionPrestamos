@@ -5,7 +5,6 @@
         "sueldo": 1000.0,
         "id": 4
     },
-    
     {
         "nombre": "Monica",
         "cedula": "1204233561",
@@ -17,5 +16,11 @@
         "cedula": "1206011106",
         "sueldo": 600.0,
         "id": 6
+    },
+    {
+        "nombre": "Ileana",
+        "cedula": "1757056385",
+        "sueldo": 500.0,
+        "id": 7
     }
 ]

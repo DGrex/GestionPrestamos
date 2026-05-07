@@ -1,5 +1,5 @@
 import os
-from .colors import Fore, Back, Style
+from core.colors import Fore, Back, Style
 
 
 class ConsoleUtils:
