@@ -25,8 +25,18 @@
         "monto": 800.0,
         "numero_cuotas": 3,
         "cuota": 266.67,
+        "saldo": 790.0,
+        "estado": "pagado",
+        "id": 4
+    },
+    {
+        "empleado_id": 4,
+        "fecha_prestamo": "07/05/2026 06:24:57",
+        "monto": 800.0,
+        "numero_cuotas": 2,
+        "cuota": 400.0,
         "saldo": 800.0,
         "estado": "pendiente",
-        "id": 4
+        "id": 5
     }
 ]

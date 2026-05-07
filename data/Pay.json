@@ -16,5 +16,11 @@
         "valor_pago": 55.46,
         "fecha_pago": "03/05/2026 22:46:28",
         "id": 3
+    },
+    {
+        "prestamo_id": 4,
+        "valor_pago": 10.0,
+        "fecha_pago": "07/05/2026 06:23:47",
+        "id": 4
     }
 ]

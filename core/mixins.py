@@ -6,6 +6,7 @@ class ValidationMixin:
 
     @staticmethod
     def validate_identification(cedula: str):
+        cedula = cedula.strip()
         """
         Validar cédula ecuatoriana:
         - Debe tener 10 dígitos

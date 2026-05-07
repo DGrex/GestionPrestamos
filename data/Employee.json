@@ -1,11 +1,5 @@
 [
     {
-        "nombre": "Denis Goyes",
-        "cedula": "1207279181",
-        "sueldo": 1000.0,
-        "id": 4
-    },
-    {
         "nombre": "Monica",
         "cedula": "1204233561",
         "sueldo": 2000.0,
@@ -22,5 +16,11 @@
         "cedula": "1757056385",
         "sueldo": 500.0,
         "id": 7
+    },
+    {
+        "nombre": "Denis Javier Goyes Moran",
+        "cedula": "1207279181",
+        "sueldo": 500.0,
+        "id": 8
     }
 ]

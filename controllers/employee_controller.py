@@ -34,8 +34,9 @@ class EmployeeController(CrudInterface, ValidationMixin, LogMixin):
             ConsoleUtils.print_colored(employee.display_name, Fore.CYAN)
 
     def read_by_cedula(self, identification):
+        identification = identification.strip()
         try:
-            employee = self.__storage.load()
+            employee = self.all()
         except JsonManagerError as e:
             ConsoleUtils.print_error(str(e))
             return None
@@ -49,7 +50,7 @@ class EmployeeController(CrudInterface, ValidationMixin, LogMixin):
         salary = self.validate_salary(input("Ingrese sueldo: "))
 
         try:
-            employee_data = self.__storage.load()
+            employee_data = self.all()
         except JsonManagerError as e:
             ConsoleUtils.print_error(str(e))
             return
@@ -130,7 +131,7 @@ class EmployeeController(CrudInterface, ValidationMixin, LogMixin):
     @confirm_action("¿Actualizar empleado? (s/n): ")
     def _update_employee(self, id_employee, employee):
         try:
-            data_employee = self.__storage.load()
+            data_employee = self.all()
         except JsonManagerError as e:
             ConsoleUtils.print_error(str(e))
             return
